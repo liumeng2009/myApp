@@ -1,0 +1,106 @@
+<ion-header>
+  <ion-navbar no-border-bottom>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+
+    <ion-segment [(ngModel)]="workStatus" (ionChange)="statusChanged($event)">
+      <ion-segment-button value="working">
+        <ion-badge item-end *ngIf="statusCount.working!=0">{{statusCount.working}}</ion-badge>
+        未完成
+      </ion-segment-button>
+      <ion-segment-button value="done">
+        <ion-badge item-end *ngIf="statusCount.done!=0">{{statusCount.done}}</ion-badge>
+        已完成
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-buttons end>
+
+        <ion-datetime displayFormat="M月DD日" pickerFormat="YYYY MM DD"
+                      [(ngModel)]="todayString"
+                      (ngModelChange)="ok($event)"
+                      cancelText="取消"
+                      doneText="确定"
+        >
+        </ion-datetime>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <!--
+  <ion-datetime displayFormat="YYYY年MM月DD日" pickerFormat="YYYY MM DD"
+                [(ngModel)]="todayString"
+                (ngModelChange)="ok($event)"
+                cancelText="取消"
+                doneText="确定"
+  >
+  </ion-datetime>-->
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-list>
+    <ion-item *ngIf="isLoadingList" style="display: flex; align-items: center; flex-direction: column;">
+      <ion-spinner name="bubbles" color="primary"></ion-spinner>
+    </ion-item>
+    <ion-item *ngIf="groups.length==0&&!isLoadingList">
+      没有相关记录
+    </ion-item>
+    <ion-item-group *ngFor="let group of groups">
+      <ion-item-divider sticky>
+        <ion-label (press)="sign(group.id)">
+          {{group.incoming_time|dateList}} - {{group.corporation?.name }} {{(group.custom_phone==''||group.custom_phone=='15822927208')?'':('- '+group.custom_phone)}}
+          <a style="float:right;color:#999" (click)="sign(group.id)"  *ngIf="!showCheckbox(group.id)">签名</a>
+          <a style="float:right;color:#488aff" (click)="sign(group.id)"  *ngIf="showCheckbox(group.id)">签名</a>
+        </ion-label>
+      </ion-item-divider>
+
+      <ion-item-sliding *ngFor="let op of group.operations" [attr.track]="op.important?'angular':'ionic'" >
+
+        <ion-item (click)="goToDetail(op.id,op.no)">
+          <ion-label style="display:flex">
+            <ion-item  style="flex:1;padding-left:0px;">
+              <ion-checkbox *ngIf="showCheckbox(group.id)" item-start (ionChange)="signCheckChanged($event,op.id)" ></ion-checkbox>
+            </ion-item>
+            <ion-item  style="flex:10" class="headline">
+              <h3 *ngIf="op.businessContent.sequence!=1">{{op?.businessContent?.equipment}} {{op?.businessContent?.equipOp?.name}}</h3>
+              <h3 *ngIf="op.businessContent.sequence==1">{{op.businessContent.equipOp.name}}{{op.businessContent.equipment}} </h3>
+              <p style="color:green" *ngIf="op?.progress_status_code==2">
+                {{op?.progress_time|dateList}} - {{op?.progress_name}}
+              </p>
+              <p style="color:#AC282B" *ngIf="op?.progress_status_code==1">
+                {{op?.progress_time|dateList}} - {{op?.progress_name}}
+              </p>
+              <p style="color:gray" *ngIf="op?.progress_status_code==0">
+                {{op?.progress_time|dateList}} - {{op?.progress_name}}
+              </p>
+              <p style="color:orange" *ngIf="op?.progress_status_code==3">
+                {{op?.progress_name}} - {{op?.progress_time|dateList}} 完成
+              </p>
+            </ion-item>
+            <ion-item style="flex:2">
+              <img src="{{op?.signString}}">
+            </ion-item>
+          </ion-label>
+        </ion-item>
+      </ion-item-sliding>
+
+      <ion-item  *ngIf="showCheckbox(group.id)" >
+        <button ion-button outline color="primary"  (click)="saveSign()">保存签名</button>
+        <button ion-button outline color="light" (click)="cancelCheck(group.id)">取消</button>
+      </ion-item>
+
+    </ion-item-group>
+  </ion-list>
+  <ion-fab bottom right>
+    <button ion-fab color="primary" (click)="goAdd()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>
+
+
+
+
+

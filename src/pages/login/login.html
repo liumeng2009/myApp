@@ -1,0 +1,24 @@
+<ion-content padding >
+  <ion-list>
+    <ion-item>
+      <ion-label fixed>用户名</ion-label>
+      <ion-input type="text" [(ngModel)]="user.username" ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>密码</ion-label>
+      <ion-input type="password"  [(ngModel)]="user.password" ></ion-input>
+    </ion-item>
+
+  </ion-list>
+
+  <ion-list>
+    <ion-item (click)="login()">
+      <button ion-button default  color="primary" block [disabled]="isLoading">
+        <ion-spinner *ngIf="isLoading" item-start name="ios" color="light"></ion-spinner>
+        <label>登录</label>
+      </button>
+
+    </ion-item>
+  </ion-list>
+</ion-content>

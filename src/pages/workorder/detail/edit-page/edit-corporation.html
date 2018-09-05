@@ -1,0 +1,18 @@
+<ion-list>
+  <ion-item>
+    <ion-label>组织</ion-label>
+    <ion-select #selectGroup [(ngModel)]="groupId" (ngModelChange)="groupOk($event)" okText="确定" cancelText="取消">
+      <ion-select-option [value]="g.id" *ngFor="let g of groups">{{g.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label>公司</ion-label>
+    <ion-select #selectCorporation [(ngModel)]="corporationId"  okText="确定" cancelText="取消">
+      <ion-select-option [value]="c.id" *ngFor="let c of corporations">{{c.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+<div padding>
+  <button ion-button block (click)="save()">保存</button>
+</div>
+

@@ -1,0 +1,72 @@
+.item-datetime .label-md{
+  color:#000;
+}
+.datetime-md{
+   padding-left: 0px;
+   .datetime-placeholder{
+     color:color($colors,primary)
+   }
+ }
+.datetime-ios{
+  padding-left: 0px;
+  .datetime-placeholder{
+    color:color($colors,primary)
+  }
+}
+
+$categories: (
+  ionic: color($colors, primary),
+  angular: #AC282B,
+  communication: #8E8D93,
+  tooling: #FE4C52,
+  services: #FD8B2D,
+  design: #FED035,
+  workshop: #69BB7B,
+  food: #3BC7C4,
+  documentation: #B16BE3,
+  navigation: #6600CC,
+);
+
+@function auxiliary-categories() {
+  @return map-remove($categories);
+}
+
+
+detail{
+  @each $track, $value in auxiliary-categories() {
+    ion-item-sliding[track=#{$track}], ion-item-divider[track=#{$track}]{
+      border-left: 2px solid $value;
+      padding-left: 10px;
+    }
+  }
+}
+
+
+@each $track, $value in auxiliary-categories() {
+  ion-label[color=#{$track}]{
+    color:$value
+  }
+}
+
+ion-item-sliding[enable=gray] ion-label:nth-of-type(even){
+  color:#999;
+}
+
+.picker-toolbar-delete{
+  .picker-button{
+    color:color($colors,danger)
+  }
+}
+
+.popover-md .popover-content{
+  width:80%
+}
+
+.pop{
+  .popover-content{
+    margin-top:-110px
+  }
+}
+
+
+

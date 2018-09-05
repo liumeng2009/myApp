@@ -1,0 +1,24 @@
+add-op-op {
+  .trans {
+    .toolbar-background {
+      background: transparent;
+      border-color: transparent;
+    }
+  }
+  ion-footer.footer-md::before{
+    background: transparent;
+    background-image: none;
+  }
+  .slide-zoom{
+    height:100%;
+  }
+  .datetime-md{
+    padding-left: 16px;
+  }
+  .datetime-text{
+    color:color($colors, primary);
+  }
+  ion-select{
+    max-width:85%
+  }
+}

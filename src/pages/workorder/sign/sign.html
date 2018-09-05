@@ -1,0 +1,25 @@
+<ion-header #head>
+  <ion-navbar>
+    <ion-title>
+      {{typeName}}{{no}}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="dismiss()">关闭</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <signature-pad [options]="signaturePadOptions" (onBeginEvent)="drawStart()" (onEndEvent)="drawComplete()"></signature-pad>
+</ion-content>
+<ion-footer #foot>
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button (click)="reload()">重新载入</button>
+    </ion-buttons>
+<!--    <ion-buttons end>
+      <button ion-button (click)="clear()">清除</button>
+      <button ion-button (click)="save()">保存</button>
+    </ion-buttons>-->
+  </ion-toolbar>
+</ion-footer>
+

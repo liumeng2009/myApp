@@ -1,0 +1,11 @@
+<ion-list>
+  <ion-item>
+    <ion-label>
+      工单备注
+    </ion-label>
+    <ion-textarea placeholder="工单备注" [(ngModel)]="remark" autosize></ion-textarea>
+  </ion-item>
+</ion-list>
+<div padding>
+  <button ion-button block (click)="save()">保存</button>
+</div>

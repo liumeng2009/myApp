@@ -1,0 +1,25 @@
+<ion-header #head>
+  <ion-navbar>
+    <ion-title>
+      {{title.getTitle()}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-fab bottom right>
+    <button ion-fab mini (click)="refresh()">
+      <ion-icon name="refresh"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-list #list>
+    <button ion-item color="light" icon-start (click)="search()" class="bluefontbutton">
+      <ion-icon name="search" color="primary"></ion-icon>
+      {{searchText}}的数据统计
+    </button>
+  </ion-list>
+
+
+  <canvas #chart [ngStyle]="canvasStyle"></canvas>
+
+</ion-content>

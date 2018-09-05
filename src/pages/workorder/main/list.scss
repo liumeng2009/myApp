@@ -1,0 +1,64 @@
+$categories: (
+  ionic: color($colors, primary),
+  angular: #AC282B,
+  communication: #8E8D93,
+  tooling: #FE4C52,
+  services: #FD8B2D,
+  design: #FED035,
+  workshop: #69BB7B,
+  food: #3BC7C4,
+  documentation: #B16BE3,
+  navigation: #6600CC,
+);
+
+@function auxiliary-categories() {
+  @return map-remove($categories);
+}
+
+page-list{
+  @each $track, $value in auxiliary-categories() {
+    ion-item-sliding[track=#{$track}] ion-label .headline ion-label {
+      border-left: 2px solid $value;
+      padding-left: 10px;
+    }
+  }
+}
+
+page-list{
+  ion-item-sliding ion-label.label-md{
+    margin:0px;
+  }
+  ion-item-sliding ion-label ion-label.label-md{
+    margin:13px 8px 13px 0;
+  }
+}
+
+.bar-buttons-md{
+  .datetime-text{
+    color:#fff;
+  }
+}
+.bar-buttons-ios{
+  .datetime-text{
+    color:color($colors, primary)
+  }
+}
+
+
+.action-sheets-basic-page {
+  .ion-md-share {
+    color: #ED4248;
+  }
+  .ion-md-arrow-dropright-circle {
+    color: #508AE4;
+  }
+  .ion-md-heart-outline {
+    color: #31D55F;
+  }
+  .action-sheet-cancel ion-icon,
+  .action-sheet-destructive ion-icon {
+    color: #757575;
+  }
+}
+
+

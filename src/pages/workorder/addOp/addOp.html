@@ -1,0 +1,169 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{title.getTitle()}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+  <ion-slides #slide (ionSlideDidChange)="slideChanged($event)">
+    <ion-slide>
+      <ion-list>
+        <ion-item>
+          <ion-label>选择订单：</ion-label>
+          <ion-datetime displayFormat="MM-DD" pickerFormat="YYYY-MM-DD"
+                        [(ngModel)]="todayString"
+                        (ngModelChange)="okOrderCreateTime()"
+                        cancelText="取消"
+                        doneText="确定"
+          >
+          </ion-datetime>
+        </ion-item>
+        <ion-item  *ngIf="orders.length==0">
+          <ion-label></ion-label>
+          <ion-label style="text-align: right" color="danger">当天没有订单可选择</ion-label>
+        </ion-item>
+        <ion-item *ngIf="orders.length>0">
+          <ion-label></ion-label>
+          <ion-select [(ngModel)]="order" selectedText="{{order?.no}}号订单"  okText="确定" cancelText="取消">
+            <ion-option [value]="o" *ngFor="let o of orders">{{o.no}}号订单</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item  *ngIf="orders.length>0">
+          <ion-label></ion-label>
+          <ion-label  style="text-align: right">{{order?.incoming_time_show}}</ion-label>
+        </ion-item>
+        <ion-item  *ngIf="orders.length>0">
+          <ion-label></ion-label>
+          <ion-label  style="text-align: right">{{order?.corporation?.name}}</ion-label>
+        </ion-item>
+        <ion-item  *ngIf="orders.length>0">
+          <ion-label></ion-label>
+          <ion-label style="text-align: right">{{order?.custom_phone}}</ion-label>
+        </ion-item>
+        <ion-item  *ngIf="orders.length>0">
+          <ion-label></ion-label>
+          <ion-label style="text-align: right">{{order?.custom_name}}</ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-footer>
+        <ion-toolbar class="trans">
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" icon-end (click)="setBusiness()" [disabled]="canGoBusiness()" >
+              下一步
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+    <ion-slide>
+      <ion-list>
+        <ion-item>
+          <ion-label style="color:#999">工单建立时间：</ion-label>
+          <ion-datetime displayFormat="MM-DD HH:mm:ss" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                        [(ngModel)]="todayString"
+                        (ngModelChange)="okCreateTime()"
+                        cancelText="取消"
+                        doneText="确定"
+          >
+          </ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label style="color:#999">是否加急：</ion-label>
+          <ion-toggle [(ngModel)]="operation.important"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label  style="display: flex;justify-content: space-between;">业务类型
+            <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddType"></ion-spinner>
+          </ion-label>
+          <ion-select #selectType [(ngModel)]="type" [selectedText]="type?.name" (ngModelChange)="editTypeOk($event)" okText="确定" cancelText="取消">
+            <ion-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label  style="display: flex;justify-content: space-between;">设备名
+            <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddEquipment"></ion-spinner>
+          </ion-label>
+          <ion-select #selectEquipment [(ngModel)]="equipment"  [selectedText]="equipment?.name" (ngModelChange)="editEquipmentOk($event)"  okText="确定" cancelText="取消">
+            <ion-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label  style="display: flex;justify-content: space-between;">操作名
+            <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddOp"></ion-spinner>
+          </ion-label>
+          <ion-select #selectBusiness [(ngModel)]="business" [selectedText]="business?.equipOp?.name"  okText="确定" cancelText="取消">
+            <ion-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label style="color:#999">备注：</ion-label>
+          <ion-textarea autosize [(ngModel)]="operation.remark"></ion-textarea>
+        </ion-item>
+      </ion-list>
+      <ion-footer>
+        <ion-toolbar class="trans">
+          <ion-buttons start style="position: absolute">
+            <button ion-button icon-end color="primary" clear (click)="setCustom()" >
+              <ion-icon name="arrow-back"></ion-icon>
+              上一步
+            </button>
+          </ion-buttons>
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" clear (click)="setAction()" [disabled]="!canGoAction()||isLoadingWorkerId" >
+              <span  *ngIf="!isLoadingWorkerId">下一步</span>
+              <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingWorkerId"></ion-spinner>
+              <ion-icon name="arrow-forward"  *ngIf="!isLoadingWorkerId"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+    <ion-slide>
+      <ion-list>
+        <ion-item>
+          <ion-label style="color:#999">开始时间：</ion-label>
+          <ion-datetime #start cancelText="取消" doneText="确定"  placeholder="未开始"
+                        displayFormat="DD日 HH:mm" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                        [(ngModel)]="operation.arrive_date"
+                        (click)="start_click($event)"
+                        (ngModelChange)="okStartTime($event)"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item *ngIf="operation.showArriveDate">
+          <ion-label style="color:#999">完成时间：</ion-label>
+          <ion-datetime #end cancelText="取消" doneText="确定"  placeholder="未开始"
+                        displayFormat="DD日 HH:mm" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                        [(ngModel)]="operation.finish_date"
+                        (click)="end_click()"
+                        (ngModelChange)="okFinishTime($event)"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item *ngIf="operation.showArriveDate&&operation.showFinishDate">
+          <ion-label style="color:#999">工单完成？</ion-label>
+          <ion-toggle  [(ngModel)]="operation.isCompleteOperation"></ion-toggle>
+        </ion-item>
+      </ion-list>
+      <ion-footer>
+        <ion-toolbar class="trans">
+          <ion-buttons start style="position: absolute" >
+            <button ion-button icon-end color="primary" clear (click)="setCustom()"  >
+              <ion-icon name="arrow-back"></ion-icon>
+              上一步
+            </button>
+          </ion-buttons>
+
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" clear (click)="save()" >
+              <span *ngIf="!isLoadingSave">完成</span>
+              <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingSave"></ion-spinner>
+              <ion-icon name="checkmark-circle"  *ngIf="!isLoadingSave"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+  </ion-slides>
+</ion-content>

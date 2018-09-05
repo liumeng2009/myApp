@@ -1,0 +1,15 @@
+<ion-content style="min-height:352px">
+  <div padding>
+    <img width="80" height="80" src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='0'">
+    <img width="80" height="80" src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='1'">
+    <img width="80" height="80" src="../assets/imgs/1.jpg" *ngIf="user?.avatarUseImg==null">
+    <input type="file" >
+  </div>
+  <ion-grid class="ava-list">
+    <ion-row>
+      <ion-col col-2 *ngFor="let img of imgArray" class="{{user?.avatar==img?'selected':''}}">
+        <img  src="{{serverPath}}{{img}}" (click)="changeSysAvatar(img)">
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

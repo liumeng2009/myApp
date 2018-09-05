@@ -1,0 +1,75 @@
+<ion-app>
+  <ion-split-pane>
+    <!-- logged out menu -->
+    <ion-menu id="loggedOutMenu" [content]="content">
+
+      <ion-header>
+        <ion-toolbar>
+          <ion-item id="app_avatar" *ngIf="user">
+            <ion-avatar item-start>
+              <img src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='0'">
+              <img src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='1'">
+              <img src="../assets/imgs/1.jpg" *ngIf="user?.avatarUseImg==null">
+            </ion-avatar>
+            <ion-label>
+              <h2>
+                {{user?.name}}
+              </h2>
+              <h4>
+                {{user?.role?.name}}
+              </h4>
+            </ion-label>
+
+          </ion-item>
+          <ion-item id="app_avatar_out"  *ngIf="!user">
+            <h2>请您登陆</h2>
+          </ion-item>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="outer-content">
+        <ion-grid *ngIf="user" padding>
+          <ion-row>
+            <ion-col col-4 style="display: flex;flex-direction:column;align-items: center">
+              <span style="font-weight: bolder;line-height: 200%;color:#488aff">{{opCount}}</span>
+              <span>工单数</span>
+            </ion-col>
+            <ion-col col-4 style="display: flex;flex-direction:column;align-items: center">
+              <span  style="font-weight: bolder;line-height: 200%;color:#488aff">{{opStamp?opStamp:0}}</span>
+              <span>分钟</span>
+            </ion-col>
+            <ion-col col-4 style="display: flex;flex-direction:column;align-items: center">
+              <span  style="font-weight: bolder;line-height: 200%;color:#488aff">100%</span>
+              <span>好评率</span>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-list>
+          <ion-item (click)="goData()"  *ngIf="user">
+            <ion-icon name="podium" color="primary" style="margin-right: 5px;"></ion-icon>
+            我的工作数据
+          </ion-item>
+          <ion-item ion-item (click)="goSettings()"  *ngIf="user">
+            <ion-icon name="settings" color="primary" style="margin-right: 5px;"></ion-icon>
+            设置
+          </ion-item>
+          <ion-item ion-item (click)="goAbout()">
+            <ion-icon name="information-circle" color="primary" style="margin-right: 5px;"></ion-icon>
+            关于
+          </ion-item>
+          <ion-item ion-item (click)="exit()"  *ngIf="user">
+            <ion-icon name="log-out" color="primary" style="margin-right: 5px;" ></ion-icon>
+            退出账户
+          </ion-item>
+        </ion-list>
+
+      </ion-content>
+
+    </ion-menu>
+
+    <ion-router-outlet></ion-router-outlet>
+<!--    <ion-nav [root]="rootPage" #content swipeBackEnabled="false" main name="app"></ion-nav>-->
+  </ion-split-pane>
+
+
+</ion-app>

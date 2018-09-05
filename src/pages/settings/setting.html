@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button icon-only (click)="backToTab()" >
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>
+      {{title.getTitle()}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label (click)="openAvatarEditPage()">
+        <img width="80" height="80" src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='0'">
+        <img width="80" height="80" src="{{serverPath}}{{user?.avatar}}" *ngIf="user?.avatarUseImg=='1'">
+        <img width="80" height="80" src="../assets/imgs/1.jpg" *ngIf="user?.avatarUseImg==null">
+      </ion-label>
+      <ion-label style="text-align: right">
+        <ion-icon name="create" md="md-create" color="primary" style="margin-left:10px" (click)="openAvatarEditPage()"></ion-icon>
+      </ion-label>
+
+    </ion-item>
+    <ion-item>
+      <ion-label>登录名</ion-label>
+      <ion-label style="text-align: right" (click)="openNameEditPage()">
+        {{user?.name}}
+        <ion-icon name="create" md="md-create" color="primary" style="margin-left:10px"></ion-icon>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>密码：</ion-label>
+      <ion-label style="text-align: right" color="secondary"   (click)="openPasswordEditPage()">
+        保护中
+        <ion-icon name="create" md="md-create" color="primary" style="margin-left:10px"></ion-icon>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>电话</ion-label>
+      <ion-label  style="text-align: right"  (click)="openPhoneEditPage()">
+        {{user?.phone}}
+        <ion-icon name="create" md="md-create" color="primary" style="margin-left:10px"></ion-icon>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

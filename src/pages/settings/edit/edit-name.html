@@ -1,0 +1,11 @@
+<ion-list>
+  <ion-item>
+    <ion-label>
+      {{placeHolder}}
+    </ion-label>
+    <ion-input placeholder="{{placeHolder}}" [(ngModel)]="phone"></ion-input>
+  </ion-item>
+</ion-list>
+<div padding>
+  <button ion-button block (click)="save()">保存</button>
+</div>

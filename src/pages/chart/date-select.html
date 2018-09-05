@@ -1,0 +1,29 @@
+<ion-list padding>
+  <ion-item>
+    <ion-label>开始时间：</ion-label>
+    <ion-datetime displayFormat="YYYY-MM-DD" pickerFormat="YYYY-MM-DD"
+                  [(ngModel)]="startString"
+                  (ngModelChange)="okStartTime()"
+                  cancelText="取消"
+                  doneText="确定"
+    >
+    </ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-label>结束时间：</ion-label>
+    <ion-datetime displayFormat="YYYY-MM-DD" pickerFormat="YYYY-MM-DD"
+                  [(ngModel)]="endString"
+                  (ngModelChange)="okEndTime()"
+                  cancelText="取消"
+                  doneText="确定"
+    >
+    </ion-datetime>
+  </ion-item>
+  <ion-item>
+    <button ion-button (click)="setMonth()" color="{{checkIsMonth()?'primary':'light'}}" [disabled]="checkIsMonth()?true:false" >本月</button>
+    <button ion-button (click)="setYear()" color="{{checkIsYear()?'primary':'light'}}" [disabled]="checkIsYear()?true:false">本年度</button>
+  </ion-item>
+  <ion-item>
+    <button ion-button (click)="search()" default>查询</button>
+  </ion-item>
+</ion-list>

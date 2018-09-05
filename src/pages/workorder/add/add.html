@@ -1,0 +1,257 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{title.getTitle()}}
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="addBusiness()"  *ngIf="showAddBusinessButton">
+        新增业务
+      </button>
+      <button ion-button icon-only (click)="showHelp($event)"  *ngIf="showAddActionButton">
+        <ion-icon name="help-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content fullscreen="true">
+  <ion-slides #slide (ionSlideDidChange)="slideChanged($event)" >
+    <ion-slide>
+      <ion-list padding>
+        <ion-item>
+          <ion-label style="color:#999">发生时间：</ion-label>
+          <ion-datetime displayFormat="MM-DD HH:mm:ss" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                        [(ngModel)]="todayString"
+                        (ngModelChange)="okCreateTime()"
+                        cancelText="取消"
+                        doneText="确定"
+          >
+          </ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label style="display: flex;justify-content: space-between;">
+            公司：
+            <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingGroup"></ion-spinner>
+          </ion-label>
+          <ion-select #selectGroup [(ngModel)]="groupId" (ngModelChange)="groupOk($event)" okText="确定" cancelText="取消">
+            <ion-option [value]="g.id" *ngFor="let g of groups">{{g.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label style="display: flex;justify-content: space-between;">
+            <span></span>
+            <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingCorporation"></ion-spinner>
+          </ion-label>
+          <ion-select #selectCorporation [(ngModel)]="corporation" [selectedText]="corporation?.name"  okText="确定" cancelText="取消">
+            <ion-option [value]="c" *ngFor="let c of corporations">{{c.name}}</ion-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>来电号码：</ion-label>
+          <ion-input type="text" [(ngModel)]="order.custom_phone"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>来电客户：</ion-label>
+          <ion-input type="text" [(ngModel)]="order.custom_name"></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-footer>
+        <ion-toolbar class="trans">
+
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" icon-end (click)="setBusiness()" [disabled]="canGoBusiness()" >
+              下一步
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+    <ion-slide>
+      <ion-scroll scrollY="true" style="height:100%" #scrollTwo>
+          <ion-list padding class="need-list">
+            <ion-item *ngFor="let need of needs">
+              <p style="flex:6" *ngIf="!need.edit&&!need.op.sequence">
+                <ion-icon name="thunderstorm" *ngIf="need?.forget" style="color:#ffc125"></ion-icon>
+                <span *ngIf="need?.op?.isAdvanced" style="color:#f53d3d">{{need.equipment.name}}{{need?.op?.equipOp?.name}}X {{need.no}}</span>
+                <span *ngIf="!need?.op?.isAdvanced">{{need.equipment.name}}{{need?.op?.equipOp?.name}}X {{need.no}}</span>
+              </p>
+              <p style="flex:6" *ngIf="!need.edit&&need.op.sequence">
+                <ion-icon name="thunderstorm"  *ngIf="need?.forget" style="color:#ffc125"></ion-icon>
+                <span *ngIf="need?.op?.isAdvanced"  style="color:#f53d3d">{{need?.op?.equipOp?.name}}{{need.equipment.name}}X {{need.no}}</span>
+                <span *ngIf="!need?.op?.isAdvanced">{{need?.op?.equipOp?.name}}{{need.equipment.name}}X {{need.no}}</span>
+              </p>
+              <button *ngIf="!need.edit" default style="flex:1" ion-button color="primary" item-end (click)="editNeedList(need)">编辑</button>
+              <button *ngIf="!need.edit" default style="flex:1" ion-button color="danger" item-end (click)="deleteNeedList(need)">删除</button>
+              <ion-item *ngIf="need.edit">
+                <ion-label>业务类型{{editType?.name}}</ion-label>
+                <ion-select #editSelectType [(ngModel)]="editType" [selectedText]="editType?.name" (ngModelChange)="editTypeOk($event)" okText="确定" cancelText="取消">
+                  <ion-option [value]="g" *ngFor="let g of editTypes">{{g.name}}</ion-option>
+                </ion-select>
+              </ion-item>
+              <ion-item *ngIf="need.edit">
+                <ion-label>设备名</ion-label>
+                <ion-select #editSelectEquipment [(ngModel)]="editEquipment"  [selectedText]="editEquipment?.name" (ngModelChange)="editEquipmentOk($event)"  okText="确定" cancelText="取消">
+                  <ion-option [value]="c" *ngFor="let c of editEquipments">{{c.name}}</ion-option>
+                </ion-select>
+              </ion-item>
+              <ion-item *ngIf="need.edit">
+                <ion-label>操作名{{bc?.isAdvanced}}</ion-label>
+                <ion-select #editSelectBusiness [(ngModel)]="editBusinessContent" [selectedText]="editBusinessContent?.equipOp?.name"  okText="确定" cancelText="取消">
+                  <ion-option [value]="bc" *ngFor="let bc of editBusinessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+                </ion-select>
+              </ion-item>
+              <ion-item *ngIf="need.edit">
+                <ion-range min="1" max="10" [(ngModel)]="editCount">
+                </ion-range>
+                <ion-badge item-end>{{editCount}}个</ion-badge>
+              </ion-item>
+              <ion-item  *ngIf="need.edit">
+                <button ion-button round color="primary" (click)="editNeed(need)">保存</button>
+                <button ion-button round color="light" (click)="cancelEditBusiness(need)">取消</button>
+              </ion-item>
+            </ion-item>
+          </ion-list>
+          <ion-list padding *ngIf="showAddList">
+            <ion-item>
+              <ion-label style="display: flex;justify-content: space-between;">
+                业务类型
+                <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddType"></ion-spinner>
+              </ion-label>
+              <ion-select #selectType [(ngModel)]="type" [selectedText]="type.name" (ngModelChange)="typeOk($event)" okText="确定" cancelText="取消">
+                <ion-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label style="display: flex;justify-content: space-between;">
+                设备名
+                <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddEquipment"></ion-spinner>
+              </ion-label>
+                <ion-select #selectEquipment [(ngModel)]="equipment"  [selectedText]="equipment.name" (ngModelChange)="equipmentOk($event)"  okText="确定" cancelText="取消">
+                  <ion-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label style="display: flex;justify-content: space-between;">
+                操作名
+                <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddOp"></ion-spinner>
+              </ion-label>
+              <ion-select #selectBusiness [(ngModel)]="business" [selectedText]="business.equipOp.name"  okText="确定" cancelText="取消">
+                <ion-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-range min="1" max="10" [(ngModel)]="count">
+              </ion-range>
+              <ion-badge item-end>{{count}}个</ion-badge>
+            </ion-item>
+            <ion-item>
+              <button ion-button default color="primary" (click)="saveNeed()">保存</button>
+              <button ion-button default color="light" (click)="cancelAddBusiness()">取消</button>
+            </ion-item>
+          </ion-list>
+      </ion-scroll>
+      <ion-footer>
+        <ion-toolbar class="trans">
+          <ion-buttons start style="position: absolute">
+            <button ion-button icon-end color="primary" clear (click)="setCustom()" >
+              <ion-icon name="arrow-back"></ion-icon>
+              上一步
+            </button>
+          </ion-buttons>
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" clear (click)="setAction()" [disabled]="!canGoAction()||isLoadingWorkerId" >
+              <span  *ngIf="!isLoadingWorkerId">下一步</span>
+              <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingWorkerId"></ion-spinner>
+              <ion-icon name="arrow-forward"  *ngIf="!isLoadingWorkerId"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+    <ion-slide>
+      <ion-scroll scrollY="true" style="height:100%" #scrollRight>
+        <ion-grid style="padding-bottom: 50px;">
+          <ion-row>
+            <ion-col col-2>
+              <span *ngFor="let wo of workerOrders">
+                <button ion-button color="light" outline *ngIf="!wo.select" (click)="editWorkOrder(wo)">
+                  <ion-icon name="hammer" color="danger" *ngIf="wo.showArriveDate&&!wo.showFinishDate"></ion-icon>
+                  <ion-icon name="bicycle" color="primary" *ngIf="!wo.showArriveDate&&!wo.showFinishDate"></ion-icon>
+                  <ion-icon name="checkmark" color="secondary" *ngIf="wo.showArriveDate&&wo.showFinishDate"></ion-icon>
+                </button>
+                <button ion-button color="light" *ngIf="wo.select"  (click)="editWorkOrder(wo)">
+                  <ion-icon name="hammer" color="danger" *ngIf="wo.showArriveDate&&!wo.showFinishDate"></ion-icon>
+                  <ion-icon name="bicycle" color="primary" *ngIf="!wo.showArriveDate&&!wo.showFinishDate"></ion-icon>
+                  <ion-icon name="checkmark" color="secondary" *ngIf="wo.showArriveDate&&wo.showFinishDate"></ion-icon>
+                </button>
+              </span>
+
+            </ion-col>
+            <ion-col col-10  [ngStyle]="topNumber">
+              <ion-list [ngStyle]="editArea">
+                <ion-item>
+                  <ion-label style="color:#999">工单内容：</ion-label>
+                  <ion-label *ngIf="workerOrders[selectedIndex]?.op?.sequence">{{workerOrders[selectedIndex]?.op?.equipOp?.name}}{{workerOrders[selectedIndex]?.equipment?.name}}</ion-label>
+                  <ion-label *ngIf="!workerOrders[selectedIndex]?.op?.sequence">{{workerOrders[selectedIndex]?.equipment?.name}}{{workerOrders[selectedIndex]?.op?.equipOp?.name}}</ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-label style="color:#999">是否加急：</ion-label>
+                  <ion-toggle [(ngModel)]="workerOrders[selectedIndex].important"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <ion-label style="color:#999">备注：</ion-label>
+                  <ion-textarea autosize (ngModel)="workerOrders[selectedIndex].remark"></ion-textarea>
+                </ion-item>
+                <ion-item>
+                  <ion-label style="color:#999">开始时间：</ion-label>
+                  <ion-datetime #start cancelText="取消" doneText="确定"  placeholder="未开始"
+                                displayFormat="DD日 HH:mm" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                                [(ngModel)]="workerOrders[selectedIndex].arrive_date"
+                                (click)="start_click($event,workerOrders[selectedIndex])"
+                                (ngModelChange)="okStartTime($event,workerOrders[selectedIndex])"
+                  ></ion-datetime>
+                </ion-item>
+                <ion-item *ngIf="workerOrders[selectedIndex].showArriveDate">
+                  <ion-label style="color:#999">完成时间：</ion-label>
+                  <ion-datetime #start cancelText="取消" doneText="确定"  placeholder="未开始"
+                                displayFormat="DD日 HH:mm" pickerFormat="YYYY-MM-DDTHH:mm:ssTZD"
+                                [(ngModel)]="workerOrders[selectedIndex].finish_date"
+                                (click)="finish_click()"
+                                (ngModelChange)="okFinishTime($event,workerOrders[selectedIndex])"
+                  ></ion-datetime>
+                </ion-item>
+                <ion-item *ngIf="workerOrders[selectedIndex].showArriveDate&&workerOrders[selectedIndex].showFinishDate">
+                  <ion-label style="color:#999">工单完成？</ion-label>
+                  <ion-toggle  [(ngModel)]="workerOrders[selectedIndex].isCompleteOperation"></ion-toggle>
+                </ion-item>
+                <ion-item>
+                  <button ion-button block color="danger" default (click)="deleteOp(workerOrders[selectedIndex])" >删除此工单</button>
+                </ion-item>
+              </ion-list>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+      </ion-scroll>
+      <ion-footer>
+        <ion-toolbar class="trans">
+          <ion-buttons start style="position: absolute" >
+            <button ion-button icon-end color="primary" clear (click)="setCustom()"  >
+              <ion-icon name="arrow-back"></ion-icon>
+              上一步
+            </button>
+          </ion-buttons>
+
+          <ion-buttons end>
+            <button ion-button icon-end color="primary" clear (click)="save()" >
+              <span *ngIf="!isLoadingSave">完成</span>
+              <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingSave"></ion-spinner>
+              <ion-icon name="checkmark-circle"  *ngIf="!isLoadingSave"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ion-slide>
+  </ion-slides>
+</ion-content>

@@ -1,0 +1,22 @@
+.ava-list{
+  .selected{
+    position: relative;
+    img{
+      border:color($colors,secondary) 2px solid;
+    }
+  }
+  .selected::before{
+    content:'\f3ff';
+    display: block;
+    position:absolute;
+    width:10px;
+    height:10px;
+    bottom:9px;
+    right:5px;
+    font-family: "Ionicons";
+    text-align: center;
+    line-height: 10px;
+    color:#fff;
+    background-color: color($colors,secondary);
+  }
+}
