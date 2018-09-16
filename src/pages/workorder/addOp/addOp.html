@@ -1,9 +1,9 @@
 <ion-header>
-  <ion-navbar>
+  <ion-nav>
     <ion-title>
       {{title.getTitle()}}
     </ion-title>
-  </ion-navbar>
+  </ion-nav>
 </ion-header>
 
 <ion-content fullscreen="true">
@@ -27,7 +27,7 @@
         <ion-item *ngIf="orders.length>0">
           <ion-label></ion-label>
           <ion-select [(ngModel)]="order" selectedText="{{order?.no}}号订单"  okText="确定" cancelText="取消">
-            <ion-option [value]="o" *ngFor="let o of orders">{{o.no}}号订单</ion-option>
+            <ion-select-option [value]="o" *ngFor="let o of orders">{{o.no}}号订单</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item  *ngIf="orders.length>0">
@@ -79,7 +79,7 @@
             <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddType"></ion-spinner>
           </ion-label>
           <ion-select #selectType [(ngModel)]="type" [selectedText]="type?.name" (ngModelChange)="editTypeOk($event)" okText="确定" cancelText="取消">
-            <ion-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-option>
+            <ion-select-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
@@ -87,7 +87,7 @@
             <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddEquipment"></ion-spinner>
           </ion-label>
           <ion-select #selectEquipment [(ngModel)]="equipment"  [selectedText]="equipment?.name" (ngModelChange)="editEquipmentOk($event)"  okText="确定" cancelText="取消">
-            <ion-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-option>
+            <ion-select-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
@@ -95,7 +95,7 @@
             <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddOp"></ion-spinner>
           </ion-label>
           <ion-select #selectBusiness [(ngModel)]="business" [selectedText]="business?.equipOp?.name"  okText="确定" cancelText="取消">
-            <ion-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+            <ion-select-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

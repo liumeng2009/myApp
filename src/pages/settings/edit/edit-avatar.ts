@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavParams,Events,ViewController} from 'ionic-angular'
+import {NavParams,Events,PopoverController} from '@ionic/angular'
 import {ToolService} from "../../../util/tool.service";
 import {SettingService} from "../setting.service";
 import {OptConfig} from "../../../config/config";
@@ -16,9 +16,9 @@ export class EditSettingAvatarPage{
     private navParams: NavParams,
     private toolService:ToolService,
     private events:Events,
-    private viewCtrl:ViewController,
     private settingService:SettingService,
-    private authService:AuthService
+    private authService:AuthService,
+    private popCtrl:PopoverController
   ){
   }
 
@@ -62,7 +62,7 @@ export class EditSettingAvatarPage{
         let result=this.toolService.apiResult(data)
         if(result){
           this.toolService.toast(result.message);
-          this.viewCtrl.dismiss();
+          this.popCtrl.dismiss();
           this.events.publish('userinfo:updated')
         }
       },

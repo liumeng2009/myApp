@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http,Response,Headers} from '@angular/http';
 
-import 'rxjs/add/operator/toPromise';
-import {User} from "../../bean/user";
 import {ResponseData} from "../../bean/responseData";
 import {OptConfig} from "../../config/config";
 import {CookieService} from "angular2-cookie/core";

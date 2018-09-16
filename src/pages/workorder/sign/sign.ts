@@ -1,6 +1,6 @@
 import {Component,ViewChild,ElementRef} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser'
-import {NavController,NavParams,ViewController} from 'ionic-angular'
+import {NavController,NavParams,ModalController} from '@ionic/angular'
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 import {SignService} from "./sign.service";
 import {ToolService} from "../../../util/tool.service";
@@ -15,7 +15,7 @@ import {ToolService} from "../../../util/tool.service";
 export class SignPage {
   constructor(private navCtrl: NavController,
               private navParams: NavParams,
-              private viewCtrl:ViewController,
+              private modalCtrl:ModalController,
               private signService:SignService,
               private toolService:ToolService
   ) {
@@ -94,7 +94,7 @@ export class SignPage {
   }
 
   dismiss(){
-    this.viewCtrl.dismiss();
+    this.modalCtrl.dismiss();
   }
 
   save(){
@@ -106,7 +106,7 @@ export class SignPage {
       data=>{
         let result=this.toolService.apiResult(data);
         this.toolService.toast(result.message);
-        this.viewCtrl.dismiss();
+        this.modalCtrl.dismiss();
       },
       error=>{
         this.toolService.toast(error)

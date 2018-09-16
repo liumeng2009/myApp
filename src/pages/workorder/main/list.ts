@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {
-  NavController,
+  Nav,
   Refresher,
   Events,
   ModalController,
@@ -34,7 +34,7 @@ import {AddOpPage} from "../addOp/addOp";
 export class ListPage{
   constructor(
     private title:Title,
-    private navCtrl:NavController,
+    private navCtrl:Nav,
     private listService:ListService,
     private signService:SignService,
     private toolService:ToolService,
@@ -440,24 +440,26 @@ export class ListPage{
   }
 
   private operationIdArray:string[]=[];
-  saveSign(){
+  async saveSign(){
     console.log(this.operationIdArray);
     if(this.operationIdArray.length>0){
-      this.infoPop=this.popoverCtrl.create(QrPage,{
-        opList:this.operationIdArray
-      },{
-        cssClass:'pop'
+      this.infoPop=await this.popoverCtrl.create({
+          component:QrPage,
+          componentProps:{
+              opList:this.operationIdArray
+          },
+          cssClass:'pop'
       });
-      this.infoPop.present();
+      await this.infoPop.present();
     }
     else{
       this.toolService.toast('请至少选择一个工单！')
     }
   }
 
-  goAdd(){
-    let actionSheet = this.actionSheetCtrl.create({
-      title: '新增类型',
+  async goAdd(){
+    let actionSheet =await this.actionSheetCtrl.create({
+      header: '新增类型',
       cssClass: 'action-sheets-basic-page',
       buttons: [
         {
@@ -484,7 +486,7 @@ export class ListPage{
         }
       ]
     });
-    actionSheet.present();
+    await actionSheet.present();
   }
 
 }

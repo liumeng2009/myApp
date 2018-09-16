@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy,Nav } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy,Nav,Toggle } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { HttpModule} from '@angular/http';
+import { HttpClientModule} from '@angular/common/http';
 /*import { IonicStorageModule } from '@ionic/storage';*/
 import {CookieService} from 'angular2-cookie/core'
 import { SignaturePadModule } from 'angular2-signaturepad';
 
-import {TabsPage} from '../pages/tabs/tab';
 import {ListPage} from '../pages/workorder/main/list'
 import {DetailPage} from '../pages/workorder/detail/detail'
 import {DetailModalPage} from "../pages/workorder/detail/detail-modal"
@@ -41,10 +41,8 @@ import { Autosize} from '../util/autosize';
 import {SignPage} from "../pages/workorder/sign/sign";
 import {RememberService} from "../util/remember.service";
 import {SignService} from "../pages/workorder/sign/sign.service";
-import {SignsPage} from "../pages/workorder/sign/signs";
 import {QrService} from "../pages/workorder/qrcode/qr.service";
 import {QrPage} from "../pages/workorder/qrcode/qr";
-import {WebSocketService} from "../util/WebSocketService";
 import {AddPage} from "../pages/workorder/add/add";
 import {ActionHelpPage} from "../pages/workorder/add/actionHelp";
 import {AddService} from "../pages/workorder/add/add.service";
@@ -69,8 +67,6 @@ import {SettingService} from "../pages/settings/setting.service";
   declarations: [
       AppComponent,
 
-
-      TabsPage,
       ListPage,
       DetailPage,
       DetailModalPage,
@@ -82,7 +78,6 @@ import {SettingService} from "../pages/settings/setting.service";
       EditMarkPage,
 
       SignPage,
-      SignsPage,
       QrPage,
 
       LoginPage,
@@ -112,7 +107,6 @@ import {SettingService} from "../pages/settings/setting.service";
   ],
   entryComponents: [
       AppComponent,
-      TabsPage,
       ListPage,
       DetailPage,
       DetailModalPage,
@@ -124,7 +118,6 @@ import {SettingService} from "../pages/settings/setting.service";
       EditMarkPage,
 
       SignPage,
-      SignsPage,
       QrPage,
 
       LoginPage,
@@ -149,7 +142,7 @@ import {SettingService} from "../pages/settings/setting.service";
       EditSettingAvatarPage,
       EditSettingPasswordPage
   ],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,PipesModule,FormsModule,SignaturePadModule,HttpClientModule],
   providers: [
     StatusBar,
     SplashScreen,
@@ -163,7 +156,6 @@ import {SettingService} from "../pages/settings/setting.service";
     RememberService,
     SignService,
     QrService,
-    WebSocketService,
     AddService,
     ChartService,
 

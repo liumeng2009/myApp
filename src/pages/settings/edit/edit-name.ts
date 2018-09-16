@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavParams,Events,ViewController} from 'ionic-angular'
+import {NavParams,Events,PopoverController} from '@ionic/angular'
 import {ToolService} from "../../../util/tool.service";
 import {SettingService} from "../setting.service";
 
@@ -13,7 +13,7 @@ export class EditSettingNamePage{
     private navParams: NavParams,
     private toolService:ToolService,
     private events:Events,
-    private viewCtrl:ViewController,
+    private popCtrl:PopoverController,
     private settingService:SettingService
   ){
   }
@@ -46,7 +46,7 @@ export class EditSettingNamePage{
           this.toolService.toast(data.message);
           //发出通知，告诉modal页面，更新operation
           this.events.publish('userinfo:updated');
-          this.viewCtrl.dismiss();
+          this.popCtrl.dismiss();
         }
         else{
           this.toolService.toast(data.message);

@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { TabsPage } from './tabs.page';
-import { HomePage } from '../home/home.page';
-import { AboutPage } from '../about/about.page';
 import { ContactPage } from '../contact/contact.page';
+import {ListPage} from "../../pages/workorder/main/list";
+import {WeChatPage} from "../../pages/wechat/wechat";
 
 const routes: Routes = [
   {
@@ -17,25 +16,20 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'home',
-        outlet: 'home',
-        component: HomePage
+        path: 'main',
+        outlet: 'main',
+        component: ListPage
       },
       {
-        path: 'about',
-        outlet: 'about',
-        component: AboutPage
-      },
-      {
-        path: 'contact',
-        outlet: 'contact',
-        component: ContactPage
+        path: 'wechat',
+        outlet: 'wechat',
+        component: WeChatPage
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/(home:home)',
+    redirectTo: '/tabs/(main:main)',
     pathMatch: 'full'
   }
 ];

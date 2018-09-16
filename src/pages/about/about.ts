@@ -1,6 +1,5 @@
 import {Component} from '@angular/core'
 import {NavController} from "@ionic/angular";
-import {TabsPage} from "../tabs/tab";
 import {Title} from "@angular/platform-browser";
 import {AuthService} from "../../util/auth.service";
 

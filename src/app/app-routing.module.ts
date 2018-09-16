@@ -19,9 +19,7 @@ import {AllAddressPage} from "../pages/chart/all-address";
 
 const routes: Routes = [
   { path: '', loadChildren: './tabs/tabs.module#TabsPageModule' },
-  {component:ListPage,path:'list'},
   {component:DetailPage,path:'detail/:id'},
-  {component:WeChatPage,path:'wechat'},
   {component:AboutPage,path:'about'},
   {component:SettingPage,path:'setting'},
   {component:LoginPage,path:'login'},

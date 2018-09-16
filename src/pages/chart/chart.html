@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar #navbar>
+  <ion-nav #navbar>
     <ion-buttons left>
       <button ion-button icon-only (click)="backToTab()" >
         <ion-icon name="arrow-back"></ion-icon>
@@ -8,7 +8,7 @@
     <ion-title>
       {{title.getTitle()}}
     </ion-title>
-  </ion-navbar>
+  </ion-nav>
 </ion-header>
 
 <ion-content>
@@ -16,19 +16,19 @@
     <ion-list-header>
       个人数据
     </ion-list-header>
-    <button ion-item [navPush]="personalBasicPage">个人基本统计</button>
-    <button ion-item [navPush]="personalBKPage">个人业务类别统计</button>
-    <button ion-item [navPush]="personalAdvancePage">个人业务大类别统计</button>
+    <button ion-item >个人基本统计</button>
+    <button ion-item >个人业务类别统计</button>
+    <button ion-item >个人业务大类别统计</button>
   </ion-list>
 
   <ion-list>
     <ion-list-header>
       全部数据
     </ion-list-header>
-    <button ion-item [navPush]="allBasicPage">工单数量统计</button>
-    <button ion-item [navPush]="allBasicStampPage">人员工时统计</button>
-    <button ion-item [navPush]="allBkPage">工单的业务类别统计</button>
-    <button ion-item [navPush]="allAddressPage">工单的处理地点统计</button>
+    <button ion-item >工单数量统计</button>
+    <button ion-item >人员工时统计</button>
+    <button ion-item >工单的业务类别统计</button>
+    <button ion-item >工单的处理地点统计</button>
   </ion-list>
 
 </ion-content>

@@ -1,6 +1,5 @@
 import {Component} from '@angular/core'
-import {NavController, PopoverController,Events} from "ionic-angular";
-import {TabsPage} from "../tabs/tab";
+import {Nav, PopoverController,Events} from "@ionic/angular";
 import {Title} from "@angular/platform-browser";
 import {AuthService} from "../../util/auth.service";
 import {User} from "../../bean/user";
@@ -15,7 +14,7 @@ import {EditSettingAvatarPage} from "./edit/edit-avatar";
 })
 export class SettingPage {
   constructor(
-    private navCtrl:NavController,
+    private navCtrl:Nav,
     private title:Title,
     private authService:AuthService,
     private popoverCtrl:PopoverController,
@@ -45,37 +44,46 @@ export class SettingPage {
   }
 
   backToTab(){
-    this.navCtrl.push(TabsPage,{},{direction:'back'})
+
   }
 
   private serverPath:string=new OptConfig().serverPath;
   private popover;
-  openAvatarEditPage(){
-    this.popover=this.popoverCtrl.create(EditSettingAvatarPage,{
-
+  async openAvatarEditPage(){
+    this.popover=await this.popoverCtrl.create({
+        component:EditSettingAvatarPage
     });
-    this.popover.present();
+    await this.popover.present();
   }
 
-  openNameEditPage(){
-    this.popover=this.popoverCtrl.create(EditSettingNamePage,{
-      action:'name',
-      inputValue:this.user.name
+  async openNameEditPage(){
+    this.popover=await this.popoverCtrl.create({
+        component:EditSettingNamePage,
+        componentProps:{
+            action:'name',
+            inputValue:this.user.name
+        }
     });
-    this.popover.present();
+    await this.popover.present();
   }
-  openPhoneEditPage(){
-    this.popover=this.popoverCtrl.create(EditSettingNamePage,{
-      action:'phone',
-      inputValue:this.user.phone
+  async openPhoneEditPage(){
+    this.popover=await this.popoverCtrl.create({
+        componentProps:{
+            action:'phone',
+            inputValue:this.user.phone
+        },
+        component:EditSettingNamePage
     });
-    this.popover.present();
+    await this.popover.present();
   }
-  openPasswordEditPage(){
-    this.popover=this.popoverCtrl.create(EditSettingPasswordPage,{
-      inputValue:this.user.name
+  async openPasswordEditPage(){
+    this.popover=await this.popoverCtrl.create({
+        component:EditSettingPasswordPage,
+        componentProps:{
+            inputValue:this.user.name
+        }
     });
-    this.popover.present();
+    await this.popover.present();
   }
 
   ionViewWillLeave(){

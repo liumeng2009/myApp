@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavParams,Events,ViewController} from 'ionic-angular'
+import {NavParams,Events,PopoverController} from '@ionic/angular'
 import {ToolService} from "../../../util/tool.service";
 import {SettingService} from "../setting.service";
 
@@ -14,7 +14,7 @@ export class EditSettingPasswordPage{
     private toolService:ToolService,
     private events:Events,
     private settingService:SettingService,
-    private viewCtrl:ViewController
+    private popCtrl:PopoverController
   ){
   }
 
@@ -35,8 +35,8 @@ export class EditSettingPasswordPage{
       data=>{
         let result=this.toolService.apiResult(data);
         if(result){
-          if(this.viewCtrl)
-            this.viewCtrl.dismiss();
+          if(this.popCtrl)
+            this.popCtrl.dismiss();
           this.toolService.toast(result.message+'，您需要重新登录!');
           setTimeout(()=>{
             this.events.publish('user:logout')

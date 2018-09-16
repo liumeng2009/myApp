@@ -20,10 +20,10 @@
     </ion-datetime>
   </ion-item>
   <ion-item>
-    <button ion-button (click)="setMonth()" color="{{checkIsMonth()?'primary':'light'}}" [disabled]="checkIsMonth()?true:false" >本月</button>
-    <button ion-button (click)="setYear()" color="{{checkIsYear()?'primary':'light'}}" [disabled]="checkIsYear()?true:false">本年度</button>
+    <ion-button (click)="setMonth()" color="{{checkIsMonth()?'primary':'light'}}" [disabled]="checkIsMonth()?true:false" >本月</ion-button>
+    <ion-button (click)="setYear()" color="{{checkIsYear()?'primary':'light'}}" [disabled]="checkIsYear()?true:false">本年度</ion-button>
   </ion-item>
   <ion-item>
-    <button ion-button (click)="search()" default>查询</button>
+    <ion-button (click)="search()" default>查询</ion-button>
   </ion-item>
 </ion-list>

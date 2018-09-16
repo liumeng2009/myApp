@@ -6,11 +6,10 @@ import {PublicDataService} from "../util/data/public-data.service";
 import {CookieService} from "angular2-cookie/core";
 import {ToolService} from "../util/tool.service";
 import {RememberService} from "../util/remember.service";
-import {WebSocketService} from "../util/WebSocketService";
 import {AuthService} from "../util/auth.service";
 import {ResponseData} from "../bean/responseData";
 import {User} from "../bean/user";
-import {Route, Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -23,7 +22,6 @@ export class AppComponent {
     private statusBar: StatusBar,
     private events:Events,
     private authService:AuthService,
-    private webSocketService:WebSocketService,
     private rememberService:RememberService,
     private toolService:ToolService,
     private cookieService:CookieService,
@@ -31,7 +29,7 @@ export class AppComponent {
     private publicDataService:PublicDataService,
     private alertCtrl:AlertController,
     private router:Router,
-    private route:Route
+    private route:ActivatedRoute
   ) {
     this.initializeApp();
   }
@@ -42,10 +40,7 @@ export class AppComponent {
       this.splashScreen.hide();
 
         this.events.subscribe('user:logout',()=>{
-            this.router.navigate(['login'],{relativeTo:this.route.parent});
-            this.nav.setRoot('Login', {}).then(()=>{}).catch((err: any) => {
-                console.log(`Didn't set nav root: ${err}`);
-            });
+            this.router.navigate(['login'],{relativeTo:this.route});
         })
 
         //这个页面是程序入口，在这里获取user，其他页面都获取这个user
@@ -59,7 +54,7 @@ export class AppComponent {
 
         this.getUserInfo();
 
-        this.webSocketService.createObservableSocket().subscribe(
+/*        this.webSocketService.createObservableSocket().subscribe(
             data=>{
                 console.log(data);
                 let dataJson=JSON.parse(data);
@@ -80,7 +75,7 @@ export class AppComponent {
             },
             error=>{console.log(error);},
             ()=>{console.log('complete');}
-        )
+        )*/
 
     });
   }
@@ -135,37 +130,25 @@ export class AppComponent {
   goData(){
       this.menuCtrl.close();
       //this.nav.push(ChartPage);
-      this.nav.setRoot('Chart', {},{}).then(()=>{
-
-      }).catch((err: any) => {
-          console.log(`Didn't set nav root: ${err}`);
-      });
+      this.router.navigate(['chart'],{relativeTo:this.route});
   }
 
   goSettings(){
       this.menuCtrl.close();
       //this.nav.push(ChartPage);
-      this.nav.setRoot('Setting', {},{}).then(()=>{
-
-      }).catch((err: any) => {
-          console.log(`Didn't set nav root: ${err}`);
-      });
+      this.router.navigate(['setting'],{relativeTo:this.route});
   }
 
   goAbout(){
       this.menuCtrl.close();
       //this.nav.push(ChartPage);
-      this.nav.setRoot('About', {},{}).then(()=>{
-
-      }).catch((err: any) => {
-          console.log(`Didn't set nav root: ${err}`);
-      });
+      this.router.navigate(['about'],{relativeTo:this.route});
   }
 
-  exit(){
+  async exit(){
       let t=this;
-      const confirm = this.alertCtrl.create({
-          title: '确定?',
+      const confirm =await this.alertCtrl.create({
+          header: '确定?',
           message: '您确定要退出账户吗?',
           buttons: [
               {
@@ -179,14 +162,12 @@ export class AppComponent {
                   handler: () => {
                       t.user=null;
                       t.cookieService.remove('optAppToken');
-                      t.nav.setRoot('Login', {}).then(()=>{}).catch((err: any) => {
-                          console.log(`Didn't set nav root: ${err}`);
-                      });
+                      this.router.navigate(['login'],{relativeTo:this.route});
                       t.menuCtrl.close();
                   }
               }
           ]
       });
-      confirm.present();
+      await confirm.present();
   }
 }

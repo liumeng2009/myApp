@@ -1,10 +1,10 @@
 <ion-header>
-  <ion-navbar no-border-bottom>
+  <ion-nav no-border-bottom>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
 
-    <ion-segment [(ngModel)]="workStatus" (ionChange)="statusChanged($event)">
+    <ion-segment (ionChange)="statusChanged($event)">
       <ion-segment-button value="working">
         <ion-badge item-end *ngIf="statusCount.working!=0">{{statusCount.working}}</ion-badge>
         未完成
@@ -18,7 +18,7 @@
     <ion-buttons end>
 
         <ion-datetime displayFormat="M月DD日" pickerFormat="YYYY MM DD"
-                      [(ngModel)]="todayString"
+
                       (ngModelChange)="ok($event)"
                       cancelText="取消"
                       doneText="确定"
@@ -26,7 +26,7 @@
         </ion-datetime>
     </ion-buttons>
 
-  </ion-navbar>
+  </ion-nav>
 </ion-header>
 
 <ion-content>

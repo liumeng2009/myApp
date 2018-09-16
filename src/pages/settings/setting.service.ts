@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpResponse,HttpHeaders} from '@angular/common/http';
 
-import 'rxjs/add/operator/toPromise';
 
 import {CookieService} from 'angular2-cookie/core';
 
@@ -11,7 +10,7 @@ import {OptConfig} from '../../config/config'
 
 @Injectable()
 export class SettingService {
-  constructor(private http: Http, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
 
   }
 
@@ -23,7 +22,7 @@ export class SettingService {
 
   editOperation(params:any): Promise<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     console.log(params);
     return this.http
       .post(this.editOperationUrl, params, {headers: headers})
@@ -33,7 +32,7 @@ export class SettingService {
   }
 
   sysAvatarList(){
-    let headers=new Headers({'Content-Type': 'application/json'})
+    let headers=new HttpHeaders({'Content-Type': 'application/json'})
     return this.http
       .get(this.sysAvatarListUrl,{headers: headers})
       .toPromise()
@@ -43,7 +42,7 @@ export class SettingService {
 
   setSysAvatar(img):Promise<ResponseData>{
     let token=this.cookieService.get('optAppToken');
-    let headers= new Headers({'Content-Type': 'application/json','authorization':token});
+    let headers= new HttpHeaders({'Content-Type': 'application/json','authorization':token});
     return this.http
       .post(this.setSysAvatarUrl+'?device=webapp', {img:img}, {headers: headers})
       .toPromise()
@@ -61,15 +60,15 @@ export class SettingService {
       .catch(this.handleError);
   }
 
-  private extractData(res:Response){
-    let body=res.json();
+  private extractData(res:HttpResponse<string>){
+    let body=res.body;
     //console.log(JSON.stringify(body));
     return body||{};
   }
-  private handleError(error:Response|any){
+  private handleError(error:HttpResponse<string>|any){
     let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
+    if(error instanceof HttpResponse){
+      const body=error.body|'';
       const err=body.err||JSON.stringify(body);
       errMsg=`${error.status} - ${error.statusText||''} ${err}`
     }

@@ -1,12 +1,12 @@
 <ion-header #head>
-  <ion-navbar>
+  <ion-nav>
     <ion-title>
       {{typeName}}{{no}}
     </ion-title>
     <ion-buttons end>
       <button ion-button (click)="dismiss()">关闭</button>
     </ion-buttons>
-  </ion-navbar>
+  </ion-nav>
 </ion-header>
 <ion-content>
   <signature-pad [options]="signaturePadOptions" (onBeginEvent)="drawStart()" (onEndEvent)="drawComplete()"></signature-pad>

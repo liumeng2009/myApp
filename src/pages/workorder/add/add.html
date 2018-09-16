@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar>
+  <ion-nav>
     <ion-title>
       {{title.getTitle()}}
     </ion-title>
@@ -11,7 +11,7 @@
         <ion-icon name="help-circle"></ion-icon>
       </button>
     </ion-buttons>
-  </ion-navbar>
+  </ion-nav>
 </ion-header>
 <ion-content fullscreen="true">
   <ion-slides #slide (ionSlideDidChange)="slideChanged($event)" >
@@ -33,7 +33,7 @@
             <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingGroup"></ion-spinner>
           </ion-label>
           <ion-select #selectGroup [(ngModel)]="groupId" (ngModelChange)="groupOk($event)" okText="确定" cancelText="取消">
-            <ion-option [value]="g.id" *ngFor="let g of groups">{{g.name}}</ion-option>
+            <ion-select-option [value]="g.id" *ngFor="let g of groups">{{g.name}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
@@ -42,7 +42,7 @@
             <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingCorporation"></ion-spinner>
           </ion-label>
           <ion-select #selectCorporation [(ngModel)]="corporation" [selectedText]="corporation?.name"  okText="确定" cancelText="取消">
-            <ion-option [value]="c" *ngFor="let c of corporations">{{c.name}}</ion-option>
+            <ion-select-option [value]="c" *ngFor="let c of corporations">{{c.name}}</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -68,7 +68,7 @@
       </ion-footer>
     </ion-slide>
     <ion-slide>
-      <ion-scroll scrollY="true" style="height:100%" #scrollTwo>
+      <ion-virtual-scroll scrollY="true" style="height:100%" #scrollTwo>
           <ion-list padding class="need-list">
             <ion-item *ngFor="let need of needs">
               <p style="flex:6" *ngIf="!need.edit&&!need.op.sequence">
@@ -86,19 +86,19 @@
               <ion-item *ngIf="need.edit">
                 <ion-label>业务类型{{editType?.name}}</ion-label>
                 <ion-select #editSelectType [(ngModel)]="editType" [selectedText]="editType?.name" (ngModelChange)="editTypeOk($event)" okText="确定" cancelText="取消">
-                  <ion-option [value]="g" *ngFor="let g of editTypes">{{g.name}}</ion-option>
+                  <ion-select-option [value]="g" *ngFor="let g of editTypes">{{g.name}}</ion-select-option>
                 </ion-select>
               </ion-item>
               <ion-item *ngIf="need.edit">
                 <ion-label>设备名</ion-label>
                 <ion-select #editSelectEquipment [(ngModel)]="editEquipment"  [selectedText]="editEquipment?.name" (ngModelChange)="editEquipmentOk($event)"  okText="确定" cancelText="取消">
-                  <ion-option [value]="c" *ngFor="let c of editEquipments">{{c.name}}</ion-option>
+                  <ion-select-option [value]="c" *ngFor="let c of editEquipments">{{c.name}}</ion-select-option>
                 </ion-select>
               </ion-item>
               <ion-item *ngIf="need.edit">
                 <ion-label>操作名{{bc?.isAdvanced}}</ion-label>
                 <ion-select #editSelectBusiness [(ngModel)]="editBusinessContent" [selectedText]="editBusinessContent?.equipOp?.name"  okText="确定" cancelText="取消">
-                  <ion-option [value]="bc" *ngFor="let bc of editBusinessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+                  <ion-select-option [value]="bc" *ngFor="let bc of editBusinessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-select-option>
                 </ion-select>
               </ion-item>
               <ion-item *ngIf="need.edit">
@@ -119,7 +119,7 @@
                 <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddType"></ion-spinner>
               </ion-label>
               <ion-select #selectType [(ngModel)]="type" [selectedText]="type.name" (ngModelChange)="typeOk($event)" okText="确定" cancelText="取消">
-                <ion-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-option>
+                <ion-select-option [value]="g" *ngFor="let g of types">{{g.name}}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
@@ -128,7 +128,7 @@
                 <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddEquipment"></ion-spinner>
               </ion-label>
                 <ion-select #selectEquipment [(ngModel)]="equipment"  [selectedText]="equipment.name" (ngModelChange)="equipmentOk($event)"  okText="确定" cancelText="取消">
-                  <ion-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-option>
+                  <ion-select-option [value]="c" *ngFor="let c of equipments">{{c.name}}</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item>
@@ -137,7 +137,7 @@
                 <ion-spinner name="bubbles" color="primary" *ngIf="isLoadingAddOp"></ion-spinner>
               </ion-label>
               <ion-select #selectBusiness [(ngModel)]="business" [selectedText]="business.equipOp.name"  okText="确定" cancelText="取消">
-                <ion-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-option>
+                <ion-select-option [value]="bc" *ngFor="let bc of businessContents">{{bc?.equipOp?.name}}{{bc?.isAdvanced?'（系统级）':'（桌面级）'}}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
@@ -150,7 +150,7 @@
               <button ion-button default color="light" (click)="cancelAddBusiness()">取消</button>
             </ion-item>
           </ion-list>
-      </ion-scroll>
+      </ion-virtual-scroll>
       <ion-footer>
         <ion-toolbar class="trans">
           <ion-buttons start style="position: absolute">
@@ -170,7 +170,7 @@
       </ion-footer>
     </ion-slide>
     <ion-slide>
-      <ion-scroll scrollY="true" style="height:100%" #scrollRight>
+      <ion-virtual-scroll scrollY="true" style="height:100%" #scrollRight>
         <ion-grid style="padding-bottom: 50px;">
           <ion-row>
             <ion-col col-2>
@@ -233,7 +233,7 @@
           </ion-row>
 
         </ion-grid>
-      </ion-scroll>
+      </ion-virtual-scroll>
       <ion-footer>
         <ion-toolbar class="trans">
           <ion-buttons start style="position: absolute" >

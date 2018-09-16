@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Http,Response,Headers} from '@angular/http';
 
-import 'rxjs/add/operator/toPromise';
 
 import {CookieService} from 'angular2-cookie/core';
 
@@ -47,8 +46,7 @@ export class AuthService {
         let loading;
         if(!this.user){
           loading =await this.loadingCtrl.create({
-            content: '登录中...',
-            enableBackdropDismiss:true
+            message: '登录中...'
           });
           loading.present();
         }
