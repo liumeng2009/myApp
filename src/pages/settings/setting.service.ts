@@ -7,8 +7,10 @@ import {CookieService} from 'angular2-cookie/core';
 import {ResponseData} from '../../bean/responseData';
 
 import {OptConfig} from '../../config/config'
+import {Observable, of} from "rxjs";
+import {tap,catchError,map} from "rxjs/operators";
 
-@Injectable()
+@Injectable({providedIn:'root'})
 export class SettingService {
   constructor(private http: HttpClient, private cookieService: CookieService) {
 
@@ -20,24 +22,30 @@ export class SettingService {
   private editPasswordUrl=new OptConfig().serverPath+'/api/user/editPassword'
 
 
-  editOperation(params:any): Promise<ResponseData> {
+  editOperation(params:any): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
     let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     console.log(params);
     return this.http
-      .post(this.editOperationUrl, params, {headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+      .post<ResponseData>(this.editOperationUrl, params, {headers: headers})
+      .pipe(
+          tap((data:ResponseData)=>console.log(data)),
+          catchError(this.handleError<ResponseData>('editOp'))
+      );
+
+      //.toPromise()
+      //.then(this.extractData)
+      //.catch(this.handleError);
   }
 
   sysAvatarList(){
     let headers=new HttpHeaders({'Content-Type': 'application/json'})
     return this.http
-      .get(this.sysAvatarListUrl,{headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+      .get<ResponseData>(this.sysAvatarListUrl,{headers: headers})
+        .pipe(
+            tap((data:ResponseData)=>{console.log(data);}),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        )
   }
 
   setSysAvatar(img):Promise<ResponseData>{
@@ -65,7 +73,7 @@ export class SettingService {
     //console.log(JSON.stringify(body));
     return body||{};
   }
-  private handleError(error:HttpResponse<string>|any){
+  private handleError1(error:HttpResponse<string>|any){
     let errMsg:string;
     if(error instanceof HttpResponse){
       const body=error.body|'';
@@ -78,4 +86,16 @@ export class SettingService {
     console.error(errMsg);
     return Promise.reject(errMsg);
   }
+
+  private handleError<T>(operation='operation',result?:T){
+    return (error:any):Observable<T>=>{
+      console.error(error);
+
+      console.log(`${operation} failed:${error.message}`);
+
+      return of(result as T);
+
+    }
+  }
+
 }
