@@ -11,6 +11,7 @@ import {EditImportantPage} from "./edit-page/edit-important";
 import {EditMarkPage} from "./edit-page/edit-mark";
 import {SignService} from "../sign/sign.service";
 import {SignPage} from "../sign/sign";
+import {ResponseData} from "../../../bean/responseData";
 
 @Component({
   templateUrl:'detail-modal.html',
@@ -46,47 +47,44 @@ export class DetailModalPage{
 
   getData(id){
     return new Promise((resolve, reject)=>{
-      this.detailService.getOperation(id).then(
-        data=>{
-          console.log(data);
-          if(data.status==0){
-            this.operation={...data.data};
-            resolve();
+      this.detailService.getOperation(id).subscribe(
+          (data:ResponseData)=>{
+              if(data.status==0){
+                  this.operation={...data.data};
+                  resolve();
+              }
+              else{
+                  this.toolService.toast(data.message);
+                  reject()
+              }
+          },
+          error=>{
+              this.toolService.toast(error);
+              reject()
           }
-          else{
-            this.toolService.toast(data.message);
-            reject()
-          }
-        },
-        error=>{
-          this.toolService.toast(error);
-          reject()
-        }
-      )
+      );
     })
   }
 
   private sign:string;
   getSign(id){
     return new Promise((resolve, reject)=>{
-      this.signService.getSign(id).then(
-        data=>{
-          console.log(data);
-          let result=this.toolService.apiResult(data);
-          if(result&&result.status==0){
-            this.sign=result.data;
-            resolve();
+      this.signService.getSign(id).subscribe(
+          (data:ResponseData)=>{
+              if(data.status==0){
+                  this.sign=data.data;
+                  resolve();
+              }
+              else{
+                  this.toolService.toast(data.message);
+                  reject()
+              }
+          },
+          error=>{
+              this.toolService.toast(error);
+              reject()
           }
-          else{
-            this.toolService.toast(data.message)
-            reject()
-          }
-        },
-        error=>{
-          this.toolService.toast(error);
-          reject()
-        }
-      )
+      );
     })
   }
   doRefresh(e){
@@ -114,8 +112,8 @@ export class DetailModalPage{
   }
 
   private popover;
-  openCorporationEditPage(opId,corpId,groupId){
-    this.popover=this.popupCtrl.create({
+  async openCorporationEditPage(opId,corpId,groupId){
+    this.popover=await this.popupCtrl.create({
         component:EditCorporationPage,
         componentProps:{
             operationId:opId,
@@ -124,11 +122,11 @@ export class DetailModalPage{
             action:'corporation'
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
 
-  openPhoneEditPage(opId,value){
-    this.popover=this.popupCtrl.create({
+  async openPhoneEditPage(opId,value){
+    this.popover=await this.popupCtrl.create({
         component:EditSimplePage,
         componentProps:{
             operationId:opId,
@@ -136,10 +134,10 @@ export class DetailModalPage{
             action:'phone'
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
-  openUserEditPage(opId,value){
-    this.popover=this.popupCtrl.create({
+  async openUserEditPage(opId,value){
+    this.popover=await this.popupCtrl.create({
         component:EditSimplePage,
         componentProps:{
             operationId:opId,
@@ -147,10 +145,10 @@ export class DetailModalPage{
             action:'customname'
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
-  openContentEditPage(opId,typecode,equipment,opid){
-    this.popover=this.popupCtrl.create({
+  async openContentEditPage(opId,typecode,equipment,opid){
+    this.popover=await this.popupCtrl.create({
         component:EditContentPage,
         componentProps:{
             operationId:opId,
@@ -160,28 +158,28 @@ export class DetailModalPage{
             action:'op'
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
-  openImportantEditPage(opId,important){
-    this.popover=this.popupCtrl.create({
+  async openImportantEditPage(opId,important){
+    this.popover=await this.popupCtrl.create({
         component:EditImportantPage,
         componentProps:{
             operationId:opId,
             inputValue:important
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
 
-  openMarkEditPage(opId,value){
-    this.popover=this.popupCtrl.create({
+  async openMarkEditPage(opId,value){
+    this.popover=await this.popupCtrl.create({
         component:EditMarkPage,
         componentProps:{
             operationId:opId,
             inputValue:value,
         }
     });
-    this.popover.present();
+    await this.popover.present();
   }
 
   ngOnDestroy() {
@@ -204,9 +202,9 @@ export class DetailModalPage{
   }
 
   private confirm;
-  deleteOp(opid){
+  async deleteOp(opid){
     let t=this;
-    t.confirm = this.alertCtrl.create({
+    t.confirm =await  this.alertCtrl.create({
       header: '确定?',
       message: '您确定要删除这个工单吗?',
       buttons: [
@@ -219,24 +217,24 @@ export class DetailModalPage{
         {
           text: '删除',
           handler: () => {
-            t.detailService.deleteOperation(opid).then(
-              data=>{
-                let result=this.toolService.apiResult(data);
-                if(result){
-                  this.toolService.toast(result.message);
-                  this.events.publish('op:deleted')
+            t.detailService.deleteOperation(opid).subscribe(
+                (data:ResponseData)=>{
+                    let result=this.toolService.apiResult(data);
+                    if(result){
+                        this.toolService.toast(result.message);
+                        this.events.publish('op:deleted')
 
+                    }
+                },
+                error=>{
+                    this.toolService.apiException(error)
                 }
-              },
-              error=>{
-                this.toolService.apiException(error)
-              }
-            )
+            );
           }
         }
       ]
     });
-    t.confirm.present();
+    await t.confirm.present();
   }
 
 }

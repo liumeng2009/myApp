@@ -90,41 +90,39 @@ export class AddOpPage{
   private isLoadingSave:boolean=false;
   save(){
     this.isLoadingSave=true;
-    this.authService.getUserInfo().then(
-      data=>{
-        let result=this.toolService.apiResult(data);
-        if(result) {
-          let userid = result.data.id;
-          this.operation.worker=userid;
-          this.operation.call_date=this.operation.incoming_date;
-          this.operation.call_date_timestamp=this.operation.incoming_date_timestamp;
-          this.operation.showWorker=true;
+    this.authService.getUserInfo().subscribe(
+        (data:ResponseData)=>{
+            let result=this.toolService.apiResult(data);
+            if(result) {
+                let userid = result.data.id;
+                this.operation.worker=userid;
+                this.operation.call_date=this.operation.incoming_date;
+                this.operation.call_date_timestamp=this.operation.incoming_date_timestamp;
+                this.operation.showWorker=true;
 
-          this.addService.createOperation(this.operation).then(
-            data=>{
-              this.isLoadingSave=false;
-              let result=this.toolService.apiResult(data);
-              if(result){
-                if(result.status==0){
-                  this.toolService.toast(result.message)
-                  //this.navCtrl.pop()
-                }
-              }
-            },
-            error=>{
-              this.isLoadingSave=false;
-              this.toolService.apiException(error)
+                this.addService.createOperation(this.operation).subscribe(
+                    (data:ResponseData)=>{
+                      this.isLoadingSave=false;
+                      let result=this.toolService.apiResult(data);
+                      if(result){
+                          if(result.status==0){
+                              this.toolService.toast(result.message)
+                              //this.navCtrl.pop()
+                          }
+                      }
+                    },
+                    error=>{
+                      this.isLoadingSave=false;
+                      this.toolService.apiException(error)
+                    }
+                );
             }
-          )
+        },
+        error=>{
+            this.isLoadingSave=false;
+            this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.isLoadingSave=false;
-        this.toolService.apiException(error)
-      })
-
-
-
+    );
   }
 
   private todayString=moment().format();
@@ -191,30 +189,29 @@ export class AddOpPage{
   private orders:Order[]=[];
   private getData(){
     let stamp=moment(this.todayString).valueOf();
-    this.addService.getOrderList(null,stamp).then(
-      data=>{
-        console.log(data);
-        let result=this.toolService.apiResult(data);
-        if(result){
-          this.orders=[...result.data]
-          console.log(this.orders);
-          for(let o of this.orders){
-            o.incoming_time_show=moment(o.incoming_time).format('MM-DD HH:mm:ss')
-          }
-          this.order=null;
-          if(this.order){
+    this.addService.getOrderList(null,stamp).subscribe(
+        (data:ResponseData)=>{
+          let result=this.toolService.apiResult(data);
+          if(result){
+              this.orders=[...result.data]
+              console.log(this.orders);
+              for(let o of this.orders){
+                  o.incoming_time_show=moment(o.incoming_time).format('MM-DD HH:mm:ss')
+              }
+              this.order=null;
+              if(this.order){
 
+              }
+              else{
+                  if(this.orders.length>0)
+                      this.order=this.orders[0]
+              }
           }
-          else{
-            if(this.orders.length>0)
-              this.order=this.orders[0]
-          }
+        },
+        error=>{
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.toolService.apiException(error)
-      }
-    )
+    );
   }
 
 
@@ -311,21 +308,21 @@ export class AddOpPage{
   getType(){
     this.isLoadingAddType=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getTypes().then(
-        data=>{
-          this.isLoadingAddType=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getTypes().subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddType=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddType=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddType=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -335,21 +332,21 @@ export class AddOpPage{
   getEquipment(typecode){
     this.isLoadingAddEquipment=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getEquipment(typecode).then(
-        data=>{
-          this.isLoadingAddEquipment=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getEquipment(typecode).subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddEquipment=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddEquipment=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddEquipment=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -359,21 +356,21 @@ export class AddOpPage{
   getBusiness(typecode,equipment){
     this.isLoadingAddOp=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getBusinessContents(0,typecode,equipment).then(
-        data=>{
-          this.isLoadingAddOp=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getBusinessContents(0,typecode,equipment).subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddOp=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddOp=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddOp=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 

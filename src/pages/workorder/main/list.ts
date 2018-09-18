@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   Nav,
   Refresher,
@@ -27,11 +27,10 @@ import {AddOpPage} from "../addOp/addOp";
 
 @Component({
   templateUrl:'list.html',
-  selector:'page-list',
-
+  selector:'page-list'
 })
 
-export class ListPage{
+export class ListPage implements OnInit{
   constructor(
     private title:Title,
     private navCtrl:Nav,
@@ -124,61 +123,57 @@ export class ListPage{
       let date=this.today;
       switch(this.workStatus){
         case 'working':
-          this.listService.getWorkingOpList(parseInt((date.getTime()/1000).toString()),userid).then(
-            data=>{
-              this.isLoadingList=false;
-              let result=this.toolService.apiResult(data);
-              if(result){
-                for(let d of result.data){
-                  moment.locale('zh_cn');
-                  d.create_time_show=moment(d.create_time).fromNow();
+          this.listService.getWorkingOpList(parseInt((date.getTime()/1000).toString()),userid).subscribe(
+              (data:ResponseData)=>{
+                this.isLoadingList=false;
+                let result=this.toolService.apiResult(data);
+                if(result){
+                    for(let d of result.data){
+                        moment.locale('zh_cn');
+                        d.create_time_show=moment(d.create_time).fromNow();
+                    }
+                    resolve(data);
                 }
-                resolve(data);
+              },
+              error=>{
+                this.isLoadingList=false;
+                reject(error);
               }
-
-
-            },
-            error=>{
-              this.isLoadingList=false;
-              reject(error);
-            }
           );
           break;
         case 'done':
-          this.listService.getDoneOpList(parseInt((date.getTime()/1000).toString()),userid).then(
-            data=>{
-              this.isLoadingList=false;
-              let result=this.toolService.apiResult(data);
-              if(result){
-                resolve(data);
+          this.listService.getDoneOpList(parseInt((date.getTime()/1000).toString()),userid).subscribe(
+              (data:ResponseData)=>{
+                this.isLoadingList=false;
+                let result=this.toolService.apiResult(data);
+                if(result){
+                    resolve(data);
+                }
+              },
+              error=>{
+                this.isLoadingList=false;
+                reject(error);
               }
-
-            },
-            error=>{
-              this.isLoadingList=false;
-              reject(error);
-            }
-          );
+          )
           break;
         default:
-          this.listService.getWorkingOpList(parseInt((date.getTime()/1000).toString()),userid).then(
-            data=>{
-              this.isLoadingList=false;
-              let result=this.toolService.apiResult(data);
-              if(result){
-                for(let d of result.data){
-                  moment.locale('zh_cn');
-                  d.create_time_show=moment(d.create_time).fromNow();
+          this.listService.getWorkingOpList(parseInt((date.getTime()/1000).toString()),userid).subscribe(
+              (data:ResponseData)=>{
+                this.isLoadingList=false;
+                let result=this.toolService.apiResult(data);
+                if(result){
+                    for(let d of result.data){
+                        moment.locale('zh_cn');
+                        d.create_time_show=moment(d.create_time).fromNow();
+                    }
+                    resolve(data);
                 }
-                resolve(data);
+              },
+              error=>{
+                this.isLoadingList=false;
+                reject(error);
               }
-
-            },
-            error=>{
-              this.isLoadingList=false;
-              reject(error);
-            }
-          );
+          )
           break;
       }
     })
@@ -237,17 +232,17 @@ export class ListPage{
   initSign(){
     for(let group of this.groups){
       for(let op of group.operations){
-        this.signService.getSign(op.id).then(
-          data=>{
-            let result=this.toolService.apiResult(data);
-            if(result){
-              op.signString=result.data;
-            }
-          },
-          error=>{
+        this.signService.getSign(op.id).subscribe(
+            (data:ResponseData)=>{
+              let result=this.toolService.apiResult(data);
+              if(result){
+                  op.signString=result.data;
+              }
+            },
+            error=>{
 
-          }
-        )
+            }
+        );
       }
     }
   }
@@ -275,16 +270,16 @@ export class ListPage{
     let now=new Date(this.todayString);
     this.today=now;
     let date=this.today;
-    this.listService.getOpCount(parseInt((date.getTime()/1000).toString()),this.user.id).then(
-      data=>{
-        if(data.status==0){
-          this.statusCount=data.data;
+    this.listService.getOpCount(parseInt((date.getTime()/1000).toString()),this.user.id).subscribe(
+        (data:ResponseData)=>{
+          if(data.status==0){
+              this.statusCount=data.data;
+          }
+        },
+        error=>{
+            this.toolService.apiException(error);
         }
-      },
-      error=>{
-        this.toolService.apiException(error);
-      }
-    )
+    );
   }
 
   doRefresh(refresher:Refresher){

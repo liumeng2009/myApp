@@ -9,6 +9,7 @@ import {PopoverController,Events} from "@ionic/angular";
 import {DateSelectComponent} from "./date-select";
 import {SearchDate} from "../../bean/searchDate";
 import {ChartService} from "./chart.service";
+import {ResponseData} from "../../bean/responseData";
 
 @Component({
   selector:'all-basic-page',
@@ -109,27 +110,26 @@ export class AllBasicPage{
   getData(start:number,end:number){
     if(this.chartObj1)
       this.chartObj1.showLoading('default',{text:'加载中...'});
-    this.chartService.allOpCount(start,end).then(
-      data=>{
-        console.log(data);
-        let result=this.toolService.apiResult(data)
-        if(result){
+    this.chartService.allOpCount(start,end).subscribe(
+        (data:ResponseData)=>{
+          let result=this.toolService.apiResult(data)
+          if(result){
+              this.chartObj1.hideLoading();
+              this.chartObj1.setOption({
+                  series: [{
+                      data: result.data.length==0?[{name:'工单',value:0}]:result.data
+                  }]
+              })
+              setTimeout(()=>{
+                  this.chartObj1.resize();
+              },0)
+          }
+        },
+        error=>{
           this.chartObj1.hideLoading();
-          this.chartObj1.setOption({
-            series: [{
-              data: result.data.length==0?[{name:'工单',value:0}]:result.data
-            }]
-          })
-          setTimeout(()=>{
-            this.chartObj1.resize();
-          },0)
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.chartObj1.hideLoading();
-        this.toolService.apiException(error)
-      }
-    )
+    );
   }
 
   async search(){

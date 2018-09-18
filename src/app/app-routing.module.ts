@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import {ListPage} from '../pages/workorder/main/list';
 import {DetailPage} from '../pages/workorder/detail/detail';
 import {WeChatPage} from '../pages/wechat/wechat';
 import {AboutPage} from '../pages/about/about';

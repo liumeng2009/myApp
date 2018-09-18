@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders} from '@angular/common/http';
 
 
 import {CookieService} from 'angular2-cookie/core';
@@ -9,10 +9,12 @@ import {ResponseData} from '../../../bean/responseData';
 import {OptConfig} from '../../../config/config'
 import {Order} from "../../../bean/order";
 import {WorkOrder} from "../../../bean/workOrder";
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class AddService {
-  constructor(private http: Http, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
 
   }
 
@@ -21,17 +23,18 @@ export class AddService {
   private orderListUrl=new OptConfig().serverPath+'/api/order/list'
 
   //建立订单和工单
-  createOrderOperation(order:Order): Promise<ResponseData> {
+  createOrderOperation(order:Order): Observable<ResponseData> {
     let token=this.cookieService.get('optAppToken');
-    let headers= new Headers({'Content-Type': 'application/json','authorization':token});
+    let headers= new HttpHeaders({'Content-Type': 'application/json','authorization':token});
     return this.http
       .post(this.saveUrl+'?device=webapp', order, {headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  getOrderList(pageid,time):Promise<ResponseData>{
+  getOrderList(pageid,time):Observable<ResponseData>{
     let url='';
     if(pageid){
       if(time){
@@ -51,37 +54,31 @@ export class AddService {
     }
 
     return this.http.get(url)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  createOperation(operation:WorkOrder): Promise<ResponseData> {
+  createOperation(operation:WorkOrder): Observable<ResponseData> {
     let token=this.cookieService.get('optAppToken');
-    let headers= new Headers({'Content-Type': 'application/json','authorization':token});
+    let headers= new HttpHeaders({'Content-Type': 'application/json','authorization':token});
     return this.http
       .post(this.saveOpUrl+'?device=webapp', operation, {headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
-    }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
+  private handleError<T>(operation= 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+        console.error(error);
+
+        console.log(`${operation} failed:${error.message}`);
+
+        return throwError(result as T);
+
+    };
   }
 }

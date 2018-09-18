@@ -9,6 +9,7 @@ import {PopoverController,Events} from "@ionic/angular";
 import {DateSelectComponent} from "./date-select";
 import {SearchDate} from "../../bean/searchDate";
 import {ChartService} from "./chart.service";
+import {ResponseData} from "../../bean/responseData";
 
 @Component({
   selector:'personal-basic-page',
@@ -136,54 +137,54 @@ export class PersonalBasicPage{
   getData(start:number,end:number){
     if(this.chartObj1)
     this.chartObj1.showLoading('default',{text:'加载中...'});
-    this.chartService.workerOpCount(this.user.id,start,end).then(
-      data=>{
-        console.log(data)
-        let result=this.toolService.apiResult(data)
-        if(result){
+    this.chartService.workerOpCount(this.user.id,start,end).subscribe(
+        (data:ResponseData)=>{
+          let result=this.toolService.apiResult(data)
+          if(result){
+              this.chartObj1.hideLoading();
+              this.chartObj1.setOption({
+                  series: [{
+                      data: [
+                          result.data
+                      ]
+                  }]
+              })
+              setTimeout(()=>{
+                  this.chartObj1.resize();
+              },0)
+          }
+        },
+        error=>{
           this.chartObj1.hideLoading();
-          this.chartObj1.setOption({
-            series: [{
-              data: [
-                result.data
-              ]
-            }]
-          })
-          setTimeout(()=>{
-            this.chartObj1.resize();
-          },0)
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.chartObj1.hideLoading();
-        this.toolService.apiException(error)
-      }
-    )
+    );
+
     if(this.chartObj2)
     this.chartObj2.showLoading('default',{text:'加载中...'});
-    this.chartService.workerOpStamp(this.user.id,start,end).then(
-      data=>{
+    this.chartService.workerOpStamp(this.user.id,start,end).subscribe(
+      (data:ResponseData)=>{
         let result=this.toolService.apiResult(data)
         if(result){
 
-          this.chartObj2.hideLoading();
-          this.chartObj2.setOption({
-            series: [{
-              data: [
-                result.data==null?0:result.data
-              ]
-            }]
-          })
-          setTimeout(()=>{
-            this.chartObj2.resize();
-          },0)
+            this.chartObj2.hideLoading();
+            this.chartObj2.setOption({
+                series: [{
+                    data: [
+                        result.data==null?0:result.data
+                    ]
+                }]
+            })
+            setTimeout(()=>{
+                this.chartObj2.resize();
+            },0)
         }
       },
       error=>{
-        this.chartObj2.hideLoading();
-        this.toolService.apiException(error)
+          this.chartObj2.hideLoading();
+          this.toolService.apiException(error)
       }
-    )
+    );
   }
 
   async search(){

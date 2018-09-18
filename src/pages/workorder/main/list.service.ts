@@ -1,15 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders,HttpParams} from '@angular/common/http';
 
 
 import {ResponseData} from '../../../bean/responseData';
 
 import {OptConfig} from '../../../config/config'
 import {CookieService} from "angular2-cookie/core";
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class ListService {
-  constructor(private http: Http,private cookieService:CookieService) {
+  constructor(private http: HttpClient,private cookieService:CookieService) {
 
   }
 
@@ -17,22 +19,30 @@ export class ListService {
   private doneOpListUrl=new OptConfig().serverPath+'/api/operation/doneOperationList'
   private opCountUrl=new OptConfig().serverPath+'/api/operation/operationCount'
 
-  getWorkingOpList(stamp:number,userid:string): Promise<ResponseData> {
+  getWorkingOpList(stamp:number,userid:string): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
-    let url=this.workingOpListUrl + '?stamp='+stamp+'&userid='+userid;
-    return this.http.get(url,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token});
+    const params=new HttpParams().set('stamp',stamp.toString()).set('userid',userid);
+
+    return this.http.get(this.workingOpListUrl,{
+      headers:headers,
+      params:params
+    }).pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
-  getDoneOpList(stamp:number,userid:string): Promise<ResponseData> {
+  getDoneOpList(stamp:number,userid:string): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
-    return this.http.get(this.doneOpListUrl + '?stamp='+stamp+'&userid='+userid,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token});
+    const params=new HttpParams().set('stamp',stamp.toString()).set('userid',userid);
+    return this.http.get(this.doneOpListUrl,{
+      headers:headers,
+      params:params
+    }).pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 /*  getAllOpList(stamp:number): Promise<ResponseData> {
     let token = this.cookieService.get('optAppToken');
@@ -43,31 +53,27 @@ export class ListService {
       .catch(this.handleError)
   }*/
 
-  getOpCount(stamp:number,userid:string): Promise<ResponseData> {
+  getOpCount(stamp:number,userid:string): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
-    return this.http.get(this.opCountUrl + '?stamp='+stamp+'&userid='+userid,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
+    const params=new HttpParams().set('stamp',stamp.toString()).set('userid',userid);
+    return this.http.get(this.opCountUrl,{
+      headers:headers,
+      params:params
+    }).pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
-    }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
+  private handleError<T>(operation= 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+        console.error(error);
+
+        console.log(`${operation} failed:${error.message}`);
+
+        return throwError(result as T);
+
+    };
   }
 }

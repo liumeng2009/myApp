@@ -4,6 +4,7 @@ import {NavController,NavParams,ModalController} from '@ionic/angular'
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 import {SignService} from "./sign.service";
 import {ToolService} from "../../../util/tool.service";
+import {ResponseData} from "../../../bean/responseData";
 
 
 @Component({
@@ -41,20 +42,20 @@ export class SignPage {
   }
 
   getSign(id){
-    this.signService.getSign(id).then(
-      data=>{
-        let result=this.toolService.apiResult(data);
-        if(result&&result.status==0){
-            this.signaturePad.fromDataURL(result.data,{width:this.signaturePadOptions.canvasWidth,height:this.signaturePadOptions.canvasHeight})
+    this.signService.getSign(id).subscribe(
+        (data:ResponseData)=>{
+          let result=this.toolService.apiResult(data);
+          if(result&&result.status==0){
+              this.signaturePad.fromDataURL(result.data,{width:this.signaturePadOptions.canvasWidth,height:this.signaturePadOptions.canvasHeight})
+          }
+          else{
+              this.toolService.toast(data.message);
+          }
+        },
+        error=>{
+            this.toolService.toast(error)
         }
-        else{
-          this.toolService.toast(data.message);
-        }
-      },
-      error=>{
-        this.toolService.toast(error)
-      }
-    )
+    );
   }
 
   calSignWH(){
@@ -102,16 +103,18 @@ export class SignPage {
     this.signService.saveSign({
       ids:ops,
       sign:this.signaturePad.toDataURL()
-    }).then(
-      data=>{
+    }).subscribe(
+      (data:ResponseData)=>{
         let result=this.toolService.apiResult(data);
-        this.toolService.toast(result.message);
-        this.modalCtrl.dismiss();
+        if(result){
+          this.toolService.toast(result.message);
+          this.modalCtrl.dismiss();
+        }
       },
       error=>{
-        this.toolService.toast(error)
+          this.toolService.toast(error)
       }
-    )
+    );
   }
 
   reload(){

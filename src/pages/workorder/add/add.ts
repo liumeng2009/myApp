@@ -145,31 +145,34 @@ export class AddPage {
   getGroups(){
     this.isLoadingGroup=true;
     return new Promise((resolve,reject)=>{
-      this.publicDataService.getGroups().then(
-        data=>{
-          this.isLoadingGroup=false;
-          let result=this.toolService.apiResult(data);
-          if(result.status==0){
-            this.groups=[...data.data];
-            if(this.groupId){
+      this.publicDataService.getGroups().subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingGroup=false;
+            if(data.status===0){
+              this.groups=[...data.data];
+              if(this.groupId){
 
+              }
+              else{
+                  if(this.groups.length>1)
+                      this.groupId=this.groups[1].id;
+                  else if(this.groups.length>0){
+                      this.groupId=this.groups[0].id;
+                  }
+              }
+              resolve();
             }
             else{
-              if(this.groups.length>1)
-                this.groupId=this.groups[1].id;
-              else if(this.groups.length>0){
-                this.groupId=this.groups[0].id;
-              }
+              this.toolService.toast(data.message);
+              reject();
             }
-            resolve();
+          },
+          error=>{
+            this.isLoadingGroup=false;
+            this.toolService.apiException(error);
+            reject();
           }
-        },
-        error=>{
-          this.isLoadingGroup=false;
-          this.toolService.apiException(error);
-          reject();
-        }
-      )
+      );
     })
 
 
@@ -195,21 +198,21 @@ export class AddPage {
   getCorporation(){
     this.isLoadingCorporation=true;
     return new Promise((resolve,reject)=>{
-      this.publicDataService.getCoporations(this.groupId).then(
-        data=>{
-          this.isLoadingCorporation=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getCoporations(this.groupId).subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingCorporation=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingCorporation=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingCorporation=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -248,38 +251,37 @@ export class AddPage {
       return;
     }
     this.isLoadingWorkerId=true;
-    this.authService.getUserInfo().then(
-      data=>{
-        this.isLoadingWorkerId=false;
-        let result=this.toolService.apiResult(data);
-        if(result){
-          this.user={...result.data}
-          this.slide.lockSwipeToNext(false);
-          this.slide.slideNext();
-          //将needs数组转化成新数组，新数组action页面使用
-          let incoming_time=new Date(this.todayString)
-          console.log(incoming_time);
-          console.log(this.todayString);
-          this.workerOrders.splice(0,this.workerOrders.length);
-          for(let need of this.needs){
-            for(let i=0;i<need.no;i++){
-              let workerOrder=new WorkOrder(null,null,incoming_time.getTime(),incoming_time,false,incoming_time.getTime(),null,null,null,null,this.user.id,need.type,need.equipment,need.op,true,false,false,true,null,incoming_time.getTime()+1000,incoming_time,false,false,null)
-              this.workerOrders.push(workerOrder);
-            }
+    this.authService.getUserInfo().subscribe(
+        (data:ResponseData)=>{
+          this.isLoadingWorkerId=false;
+          let result=this.toolService.apiResult(data);
+          if(result){
+              this.user={...result.data}
+              this.slide.lockSwipeToNext(false);
+              this.slide.slideNext();
+              //将needs数组转化成新数组，新数组action页面使用
+              let incoming_time=new Date(this.todayString)
+              console.log(incoming_time);
+              console.log(this.todayString);
+              this.workerOrders.splice(0,this.workerOrders.length);
+              for(let need of this.needs){
+                  for(let i=0;i<need.no;i++){
+                      let workerOrder=new WorkOrder(null,null,incoming_time.getTime(),incoming_time,false,incoming_time.getTime(),null,null,null,null,this.user.id,need.type,need.equipment,need.op,true,false,false,true,null,incoming_time.getTime()+1000,incoming_time,false,false,null)
+                      this.workerOrders.push(workerOrder);
+                  }
+              }
+              if(this.workerOrders.length>0)
+                  this.workerOrders[0].select=true;
+
+              console.log(this.workerOrders);
+
           }
-          if(this.workerOrders.length>0)
-            this.workerOrders[0].select=true;
-
-          console.log(this.workerOrders);
-
+        },
+        error=>{
+          this.isLoadingWorkerId=false;
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.isLoadingWorkerId=false;
-        this.toolService.apiException(error)
-      }
-    )
-
+    );
   }
 
   start_click(){
@@ -378,21 +380,21 @@ export class AddPage {
   getType(){
     this.isLoadingAddType=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getTypes().then(
-        data=>{
-          this.isLoadingAddType=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getTypes().subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddType=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddType=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddType=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -402,21 +404,21 @@ export class AddPage {
   getEquipment(typecode){
     this.isLoadingAddEquipment=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getEquipment(typecode).then(
-        data=>{
-          this.isLoadingAddEquipment=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getEquipment(typecode).subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddEquipment=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddEquipment=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddEquipment=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -426,21 +428,21 @@ export class AddPage {
   getBusiness(typecode,equipment){
     this.isLoadingAddOp=true;
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getBusinessContents(0,typecode,equipment).then(
-        data=>{
-          this.isLoadingAddOp=false;
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getBusinessContents(0,typecode,equipment).subscribe(
+          (data:ResponseData)=>{
+            this.isLoadingAddOp=false;
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          },
+          error=>{
+            this.isLoadingAddOp=false;
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          this.isLoadingAddOp=false;
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -689,22 +691,21 @@ export class AddPage {
     this.order.custom_position='';
     console.log(this.order);
 
-    this.addService.createOrderOperation(this.order).then(
-      data=>{
-        let result=this.toolService.apiResult(data);
-        if(result){
-          this.toolService.toast(result.message);
-          //this.navCtrl.pop();
-          this.cookieService.remove('OpAppNeed')
+    this.addService.createOrderOperation(this.order).subscribe(
+        (data:ResponseData)=>{
+          let result=this.toolService.apiResult(data);
+          if(result){
+              this.toolService.toast(result.message);
+              //this.navCtrl.pop();
+              this.cookieService.remove('OpAppNeed')
+          }
+          this.isLoadingSave=false;
+        },
+        error=>{
+          this.isLoadingSave=false;
+          this.toolService.apiException(error)
         }
-        this.isLoadingSave=false;
-      },
-      error=>{
-        this.isLoadingSave=false;
-        this.toolService.apiException(error)
-      }
-    )
-
+    );
   }
 
   async deleteOp(workorder){

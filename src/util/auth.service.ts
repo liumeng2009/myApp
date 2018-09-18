@@ -30,8 +30,9 @@ export class AuthService {
 
 
   getUserInfo(): Observable<ResponseData> {
-    const token = this.cookieService.get('optAppToken');
+    const token = this.cookieService.get('optAppToken')?this.cookieService.get('optAppToken'):'';
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'authorization' : token})
+    console.log(this.loginurl);
     return this.http.get<ResponseData>(this.loginurl + '?device=webapp', {headers: headers})
         .pipe(
             tap((data: ResponseData) => {console.log(data); }),

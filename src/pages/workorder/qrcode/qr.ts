@@ -3,6 +3,7 @@ import {NavParams, Events, PopoverController} from '@ionic/angular'
 import {ToolService} from "../../../util/tool.service";
 import {QrService} from "./qr.service";
 import {RememberService} from "../../../util/remember.service";
+import {ResponseData} from "../../../bean/responseData";
 
 
 @Component({
@@ -37,19 +38,19 @@ export class QrPage {
     this.contentHeight.height=(width+75)+'px'
 
     let ops = this.navParams.get('opList');
-    this.qrService.getQr({ids:ops}).then(
-      data=>{
-        let result=this.toolService.apiResult(data);
-        if(result){
-          this.qrcode=data.data.qr
-          let signid=data.data.signid;
-          this.rememberService.setSignId(signid);
+    this.qrService.getQr({ids:ops}).subscribe(
+        (data:ResponseData)=>{
+            let result=this.toolService.apiResult(data);
+            if(result){
+                this.qrcode=data.data.qr
+                let signid=data.data.signid;
+                this.rememberService.setSignId(signid);
+            }
+        },
+        error=>{
+            this.toolService.toast(error)
         }
-      },
-      error=>{
-        this.toolService.toast(error)
-      }
-    )
+    );
     this.addEventListener();
   }
 
@@ -71,21 +72,21 @@ export class QrPage {
 
   doRefresh(e){
     let ops = this.navParams.get('opList');
-    this.qrService.getQr({ids:ops}).then(
-      data=>{
-        let result=this.toolService.apiResult(data);
-        if(result){
-          this.qrcode=data.data.qr
-          let signid=data.data.signid;
-          this.rememberService.setSignId(signid);
+    this.qrService.getQr({ids:ops}).subscribe(
+        (data:ResponseData)=>{
+            let result=this.toolService.apiResult(data);
+            if(result){
+                this.qrcode=data.data.qr
+                let signid=data.data.signid;
+                this.rememberService.setSignId(signid);
+            }
+            e.complete()
+        } ,
+        error=>{
+            this.toolService.toast(error)
+            e.complete()
         }
-        e.complete()
-      },
-      error=>{
-        this.toolService.toast(error)
-        e.complete()
-      }
-    )
+    );
   }
 
   dismiss(){

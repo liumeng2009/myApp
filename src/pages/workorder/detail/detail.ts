@@ -76,21 +76,21 @@ export class DetailPage{
   @ViewChild('refresher') refresher:Refresher
   getData(id){
     return new Promise((resolve,reject)=>{
-      this.detailService.getOperationAction(id).then(
-        data=>{
-          let result=this.toolService.apiResult(data);
-          if(result){
-            resolve(data)
+      this.detailService.getOperationAction(id).subscribe(
+          (data:ResponseData)=>{
+            let result=this.toolService.apiResult(data);
+            if(result){
+                resolve(data)
+            }
+            else{
+                reject()
+            }
+          },
+          error=>{
+            this.toolService.apiException(error)
+            reject();
           }
-          else{
-            reject()
-          }
-        },
-        error=>{
-          this.toolService.apiException(error)
-          reject();
-        }
-      )
+      );
     })
   }
 
@@ -287,25 +287,25 @@ export class DetailPage{
         showFinishDate:showFinishDate,
         end_stamp:end_stamp,
         isCompleteOperation:isCompleteOperation
-      }).then(
-        data=>{
-          if(data.status==0){
-            this.toolService.toast(data.message);
-            this.resultToOperationObj(data.data,actionId);
-            resolve();
-          }
-          else{
-            this.toolService.toast(data.message)
+      }).subscribe(
+          (data:ResponseData)=>{
+            if(data.status==0){
+                this.toolService.toast(data.message);
+                this.resultToOperationObj(data.data,actionId);
+                resolve();
+            }
+            else{
+                this.toolService.toast(data.message)
+                this.oldToOperationObj(actionId)
+                reject();
+            }
+          },
+          error=>{
+            this.toolService.toast(error)
             this.oldToOperationObj(actionId)
             reject();
           }
-        },
-        error=>{
-          this.toolService.toast(error)
-          this.oldToOperationObj(actionId)
-          reject();
-        }
-      )
+      );
     })
 
   }

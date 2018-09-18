@@ -15,11 +15,11 @@ import { HttpClientModule} from '@angular/common/http';
 import {CookieService} from 'angular2-cookie/core'
 import { SignaturePadModule } from 'angular2-signaturepad';
 
-import {ListPage} from '../pages/workorder/main/list'
+//import {ListPage} from '../pages/workorder/main/list'
 import {DetailPage} from '../pages/workorder/detail/detail'
 import {DetailModalPage} from "../pages/workorder/detail/detail-modal"
 import {LoginPage} from '../pages/login/login'
-import {WeChatPage} from '../pages/wechat/wechat';
+//import {WeChatPage} from '../pages/wechat/wechat';
 import {SettingPage} from '../pages/settings/setting'
 import {AboutPage} from "../pages/about/about";
 import {PublicDataService} from '../util/data/public-data.service';
@@ -67,7 +67,7 @@ import {SettingService} from "../pages/settings/setting.service";
   declarations: [
       AppComponent,
 
-      ListPage,
+      //ListPage,
       DetailPage,
       DetailModalPage,
 
@@ -81,7 +81,7 @@ import {SettingService} from "../pages/settings/setting.service";
       QrPage,
 
       LoginPage,
-      WeChatPage,
+      //WeChatPage,
       SettingPage,
       AboutPage,
 
@@ -107,7 +107,7 @@ import {SettingService} from "../pages/settings/setting.service";
   ],
   entryComponents: [
       AppComponent,
-      ListPage,
+      //ListPage,
       DetailPage,
       DetailModalPage,
 
@@ -121,7 +121,7 @@ import {SettingService} from "../pages/settings/setting.service";
       QrPage,
 
       LoginPage,
-      WeChatPage,
+      //WeChatPage,
       SettingPage,
       AboutPage,
 

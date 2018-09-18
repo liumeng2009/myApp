@@ -9,6 +9,7 @@ import * as echarts from 'echarts'
 import * as moment from "moment";
 import {SearchDate} from "../../bean/searchDate";
 import {DateSelectComponent} from "./date-select";
+import {ResponseData} from "../../bean/responseData";
 
 @Component({
   selector:'all-bk-page',
@@ -116,44 +117,43 @@ export class AllBkPage{
   getData(start:number,end:number){
     if(this.chartObj1)
       this.chartObj1.showLoading('default',{text:'加载中...'});
-    this.chartService.allEquipment(start,end).then(
-      data=>{
-        console.log(data)
-        this.chartObj1.hideLoading();
-        let result=this.toolService.apiResult(data)
-        if(result){
+    this.chartService.allEquipment(start,end).subscribe(
+        (data:ResponseData)=>{
           this.chartObj1.hideLoading();
+          let result=this.toolService.apiResult(data)
+          if(result){
+              this.chartObj1.hideLoading();
 
-          let yArray:string[]=[];
-          for(let d of result.data){
-            yArray.push(d.name);
-          }
-          if(result.data.length==0){
-            yArray.push('工单数')
-          }
-          if(result.data.length>20)
-            this.calHeight(true)
-          else
-            this.calHeight(false)
-          this.chartObj1.setOption({
-            yAxis:{
-              data:yArray
-            },
-            series: [{
-              data: result.data.length==0?[{name:'工单',value:0}]:result.data
-            }]
-          })
-          setTimeout(()=>{
-            this.chartObj1.resize();
-          },0)
+              let yArray:string[]=[];
+              for(let d of result.data){
+                  yArray.push(d.name);
+              }
+              if(result.data.length==0){
+                  yArray.push('工单数')
+              }
+              if(result.data.length>20)
+                  this.calHeight(true)
+              else
+                  this.calHeight(false)
+              this.chartObj1.setOption({
+                  yAxis:{
+                      data:yArray
+                  },
+                  series: [{
+                      data: result.data.length==0?[{name:'工单',value:0}]:result.data
+                  }]
+              })
+              setTimeout(()=>{
+                  this.chartObj1.resize();
+              },0)
 
+          }
+        },
+        error=>{
+          this.chartObj1.hideLoading();
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.chartObj1.hideLoading();
-        this.toolService.apiException(error)
-      }
-    )
+    );
   }
   private searchText='本月';
   private getSearchText(start,end){
@@ -179,13 +179,13 @@ export class AllBkPage{
       this.getData(this.start,this.end)
   }
   async search(){
-        let popover =await this.popoverCtrl.create({
-            component:DateSelectComponent,
-            componentProps:{
-                start:this.start,
-                end:this.end
-            }
-        });
-        await popover.present();
-    }
+    let popover =await this.popoverCtrl.create({
+        component:DateSelectComponent,
+        componentProps:{
+            start:this.start,
+            end:this.end
+        }
+    });
+    await popover.present();
+  }
 }

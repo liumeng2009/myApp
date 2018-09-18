@@ -1,9 +1,13 @@
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
 import { ContactPage } from '../contact/contact.page';
 import {ListPage} from "../../pages/workorder/main/list";
 import {WeChatPage} from "../../pages/wechat/wechat";
+import {CommonModule} from "@angular/common";
+import {IonicModule} from "@ionic/angular";
 
 const routes: Routes = [
   {
@@ -18,7 +22,7 @@ const routes: Routes = [
       {
         path: 'main',
         outlet: 'main',
-        component: ListPage
+        component: ContactPage
       },
       {
         path: 'wechat',
@@ -35,7 +39,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  declarations:[
+      WeChatPage
+  ],
+  imports: [RouterModule.forChild(routes),FormsModule,CommonModule,IonicModule],
   exports: [RouterModule]
 })
 export class TabsPageRoutingModule {}

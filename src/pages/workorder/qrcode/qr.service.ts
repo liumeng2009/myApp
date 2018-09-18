@@ -1,46 +1,41 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders} from '@angular/common/http';
 
 
 import {ResponseData} from '../../../bean/responseData';
 
 import {OptConfig} from '../../../config/config'
 import {CookieService} from "angular2-cookie/core";
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class QrService {
-  constructor(private http: Http,private cookieService:CookieService) {
+  constructor(private http: HttpClient,private cookieService:CookieService) {
 
   }
 
   private url=new OptConfig().serverPath+'/api/sign/qr'
 
-  getQr(ids): Promise<ResponseData> {
+  getQr(ids): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     let url=this.url;
     return this.http.post(url+'?device=webapp',ids,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+      .pipe(
+          tap((data: ResponseData) => console.log(data)),
+          catchError(this.handleError<ResponseData>('editOp'))
+      );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
-    }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
+  private handleError<T>(operation= 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+        console.error(error);
+
+        console.log(`${operation} failed:${error.message}`);
+
+        return throwError(result as T);
+
+    };
   }
 }

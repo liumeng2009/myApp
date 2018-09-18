@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders,HttpParams} from '@angular/common/http';
 import {ResponseData} from '../../bean/responseData';
 import {OptConfig} from '../../config/config'
 import {CookieService} from 'angular2-cookie/core';
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class PublicDataService {
@@ -16,51 +18,56 @@ export class PublicDataService {
   private workerOpCount=new OptConfig().serverPath+'/api/operation/workerOpCount'
   private workerOpStamp=new OptConfig().serverPath+'/api/operation/workerOpStamp'
 
-  constructor(private http: Http,
+  constructor(private http: HttpClient,
               private cookieService: CookieService,) {
 
   }
 
-  getGroups(): Promise<ResponseData> {
-    return this.http.get(this.groupurl)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+  getGroups(): Observable<ResponseData> {
+    return this.http.get<ResponseData>(this.groupurl)
+      .pipe(
+          tap((data: ResponseData) => {console.log(data); }),
+          catchError(this.handleError<ResponseData>(`avaList`))
+      );
   }
 
-  getCoporations(groupId): Promise<ResponseData> {
-    return this.http.get(this.corporationurl +'?group='+groupId)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+  getCoporations(groupId): Observable<ResponseData> {
+    const params=new HttpParams().set('group',groupId);
+    return this.http.get<ResponseData>(this.corporationurl,{params:params})
+      .pipe(
+          tap((data: ResponseData) => {console.log(data); }),
+          catchError(this.handleError<ResponseData>(`avaList`))
+      );
   }
 
-  getTypes(): Promise<ResponseData> {
-    let headers=new Headers({'Content-Type': 'application/json'})
-    return this.http.get(this.equiptypeurl,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+  getTypes(): Observable<ResponseData> {
+    return this.http.get(this.equiptypeurl)
+      .pipe(
+          tap((data: ResponseData) => {console.log(data); }),
+          catchError(this.handleError<ResponseData>(`avaList`))
+      );
   }
 
-  getEquipment(typecode:string): Promise<ResponseData> {
+  getEquipment(typecode:string): Observable<ResponseData> {
     if(typecode&&typecode!=''){
       return this.http
         .get(this.equipmenturl+'/'+typecode,)
-        .toPromise()
-        .then(this.extractData)
-        .catch(this.handleError);
+          .pipe(
+              tap((data: ResponseData) => {console.log(data); }),
+              catchError(this.handleError<ResponseData>(`avaList`))
+          );
     }
     else{
       return this.http
         .get(this.equipmenturl)
-        .toPromise()
-        .then(this.extractData)
-        .catch(this.handleError);
+          .pipe(
+              tap((data: ResponseData) => {console.log(data); }),
+              catchError(this.handleError<ResponseData>(`avaList`))
+          );
     }
   }
 
-  getBusinessContents(pageid,type:string,equipment:string):Promise<ResponseData>{
+  getBusinessContents(pageid,type:string,equipment:string):Observable<ResponseData>{
     let url='';
     if(pageid){
       url=this.businessurl+'/page/'+pageid
@@ -77,46 +84,46 @@ export class PublicDataService {
     if(equipment&&equipment!=''){
       url=url+'&equipment='+equipment
     }
-    console.log(url);
     return this.http.get(url)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  getWorkerOpCount(userid){
+  getWorkerOpCount(userid):Observable<ResponseData>{
     let token=this.cookieService.get('optAppToken');
-    let headers= new Headers({'Content-Type': 'application/json','authorization':token});
-    return this.http.get(this.workerOpCount+'?userid='+userid,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+    let headers= new HttpHeaders({'Content-Type': 'application/json','authorization':token});
+      const params=new HttpParams().set('userid',userid);
+    return this.http.get(this.workerOpCount+'?userid='+userid,{
+      headers:headers,
+      params:params
+    }).pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
-  getWorkerOpStamp(userid){
+  getWorkerOpStamp(userid):Observable<ResponseData>{
     let token=this.cookieService.get('optAppToken');
-    let headers= new Headers({'Content-Type': 'application/json','authorization':token});
-    return this.http.get(this.workerOpStamp+'?userid='+userid,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+    let headers= new HttpHeaders({'Content-Type': 'application/json','authorization':token});
+    const params=new HttpParams().set('userid',userid);
+    return this.http.get(this.workerOpStamp,{
+      headers:headers,
+      params:params
+    }).pipe(
+          tap((data: ResponseData) => {console.log(data); }),
+          catchError(this.handleError<ResponseData>(`avaList`))
+      );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
-    }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
+  private handleError<T>(operation= 'operation', result?: T) {
+      return (error: any): Observable<T> => {
+          console.error(error);
+
+          console.log(`${operation} failed:${error.message}`);
+
+          return throwError(result as T);
+
+      };
   }
 }

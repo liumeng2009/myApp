@@ -6,6 +6,8 @@ import {ResponseData} from '../../../bean/responseData';
 
 import {OptConfig} from '../../../config/config'
 import {CookieService} from "angular2-cookie/core";
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class SignService {
@@ -16,40 +18,34 @@ export class SignService {
   private saveUrl = new OptConfig().serverPath + '/api/sign/save';
   private getUrl = new OptConfig().serverPath + '/api/sign/';
 
-  saveSign(sign:any): Promise<ResponseData> {
+  saveSign(sign:any): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     let url=this.saveUrl;
     return this.http.post(url,sign,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => console.log(data)),
+            catchError(this.handleError<ResponseData>('editOp'))
+        );
   }
-  getSign(opid): Promise<ResponseData> {
+  getSign(opid): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     return this.http.get(this.getUrl+opid,{headers:headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => console.log(data)),
+            catchError(this.handleError<ResponseData>('editOp'))
+        );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
-    }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
+  private handleError<T>(operation= 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+        console.error(error);
+
+        console.log(`${operation} failed:${error.message}`);
+
+        return throwError(result as T);
+
+    };
   }
 }

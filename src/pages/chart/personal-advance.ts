@@ -9,6 +9,7 @@ import * as echarts from 'echarts'
 import * as moment from "moment";
 import {SearchDate} from "../../bean/searchDate";
 import {DateSelectComponent} from "./date-select";
+import {ResponseData} from "../../bean/responseData";
 
 @Component({
   selector:'personal-advance-page',
@@ -107,46 +108,46 @@ export class PersonalAdvancePage{
   getData(start:number,end:number){
     if(this.chartObj1)
       this.chartObj1.showLoading('default',{text:'加载中...'});
-    this.chartService.workerAdvance(this.user.id,start,end).then(
-      data=>{
-        this.chartObj1.hideLoading();
-        let result=this.toolService.apiResult(data)
-        if(result){
+    this.chartService.workerAdvance(this.user.id,start,end).subscribe(
+        (data:ResponseData)=>{
           this.chartObj1.hideLoading();
+          let result=this.toolService.apiResult(data)
+          if(result){
+              this.chartObj1.hideLoading();
 
-          let nullData=0;
-          let oneData=0
-          for(let d of result.data){
-            if(d.name==null||d.name=='0')
-              nullData=nullData+d.value;
-            if(d.name=='1')
-              oneData=oneData+d.value
+              let nullData=0;
+              let oneData=0
+              for(let d of result.data){
+                  if(d.name==null||d.name=='0')
+                      nullData=nullData+d.value;
+                  if(d.name=='1')
+                      oneData=oneData+d.value
+              }
+              let dataArray=[{
+                  name:'桌面级',value:nullData
+              },{name:'系统级',value:oneData}]
+
+
+              if(result.data.length>20)
+                  this.calHeight(true)
+              else
+                  this.calHeight(false)
+              this.chartObj1.setOption({
+                  series: [{
+                      data: dataArray
+                  }]
+              })
+              setTimeout(()=>{
+                  this.chartObj1.resize();
+              },0)
+
           }
-          let dataArray=[{
-            name:'桌面级',value:nullData
-          },{name:'系统级',value:oneData}]
-
-
-          if(result.data.length>20)
-            this.calHeight(true)
-          else
-            this.calHeight(false)
-          this.chartObj1.setOption({
-            series: [{
-              data: dataArray
-            }]
-          })
-          setTimeout(()=>{
-            this.chartObj1.resize();
-          },0)
-
+        },
+        error=>{
+          this.chartObj1.hideLoading();
+          this.toolService.apiException(error)
         }
-      },
-      error=>{
-        this.chartObj1.hideLoading();
-        this.toolService.apiException(error)
-      }
-    )
+    );
   }
   private searchText='本月';
   private getSearchText(start,end){

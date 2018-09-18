@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders} from '@angular/common/http';
 
 
 import {CookieService} from 'angular2-cookie/core';
@@ -7,10 +7,12 @@ import {CookieService} from 'angular2-cookie/core';
 import {ResponseData} from '../../../bean/responseData';
 
 import {OptConfig} from '../../../config/config'
+import {Observable, throwError} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
 
 @Injectable()
 export class DetailService {
-  constructor(private http: Http, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
 
   }
 
@@ -20,68 +22,65 @@ export class DetailService {
   private editOperationUrl=new OptConfig().serverPath+'/api/operation/editSimple'
   private editActionUrl=new OptConfig().serverPath+'/api/action/edit'
 
-  getOperation(id:string): Promise<ResponseData> {
+  getOperation(id:string): Observable<ResponseData> {
     return this.http.get(this.operationDetailUrl +id)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  getOperationAction(id:string): Promise<ResponseData> {
+  getOperationAction(id:string): Observable<ResponseData> {
     return this.http.get(this.operationDetailActionUrl +id)
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
   //修改工单的所属公司
-  editOperation(params:any): Promise<ResponseData> {
+  editOperation(params:any): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     console.log(params);
     return this.http
       .post(this.editOperationUrl, params, {headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  saveAction(params:any): Promise<ResponseData> {
+  saveAction(params:any): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     console.log(params);
     return this.http
       .post(this.editActionUrl+'?device=webapp', params, {headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError);
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  deleteOperation(opId:string): Promise<ResponseData> {
+  deleteOperation(opId:string): Observable<ResponseData> {
     let token = this.cookieService.get('optAppToken');
-    let headers=new Headers({'Content-Type': 'application/json','authorization':token})
+    let headers=new HttpHeaders({'Content-Type': 'application/json','authorization':token})
     return this.http.get(this.operationDeleteUrl+opId+'?device=webapp',{headers: headers})
-      .toPromise()
-      .then(this.extractData)
-      .catch(this.handleError)
+        .pipe(
+            tap((data: ResponseData) => {console.log(data); }),
+            catchError(this.handleError<ResponseData>(`avaList`))
+        );
   }
 
-  private extractData(res:Response){
-    let body=res.json();
-    //console.log(JSON.stringify(body));
-    return body||{};
-  }
-  private handleError(error:Response|any){
-    let errMsg:string;
-    if(error instanceof Response){
-      const body=error.json()||'';
-      const err=body.err||JSON.stringify(body);
-      errMsg=`${error.status} - ${error.statusText||''} ${err}`
+    private handleError<T>(operation= 'operation', result?: T) {
+        return (error: any): Observable<T> => {
+            console.error(error);
+
+            console.log(`${operation} failed:${error.message}`);
+
+            return throwError(result as T);
+
+        };
     }
-    else{
-      errMsg=error.message?error.message:error.toString();
-    }
-    console.error(errMsg);
-    return Promise.reject(errMsg);
-  }
 }

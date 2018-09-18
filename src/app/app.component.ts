@@ -34,6 +34,8 @@ export class AppComponent {
     this.initializeApp();
   }
 
+  private content;
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
@@ -82,15 +84,14 @@ export class AppComponent {
 
   private user:User;
   getUserInfo(){
-      this.authService.getUserInfo().then((data:ResponseData)=>{
-          //let result=this.toolService.apiResult(data)
-          if(data.status==0){
-              this.user={...data.data};
-              this.getUserWorkData(this.user.id);
+      this.authService.getUserInfo().subscribe(
+          (data:ResponseData)=>{
+              if(data.status==0){
+                  this.user={...data.data};
+                  this.getUserWorkData(this.user.id);
+              }
           }
-      }).catch((e)=>{
-
-      })
+      );
   }
 
   private opCount=0;
@@ -101,30 +102,23 @@ export class AppComponent {
   }
 
   getOpCount(userid){
-      this.publicDataService.getWorkerOpCount(userid).then(
-          data=>{
+      this.publicDataService.getWorkerOpCount(userid).subscribe(
+          (data:ResponseData)=>{
               if(data.status==0){
                   this.opCount=data.data;
               }
-          },
-          error=>{
-
           }
-      )
+      );
   }
 
   getOpStamp(userid){
-      this.publicDataService.getWorkerOpStamp(userid).then(
-          data=>{
+      this.publicDataService.getWorkerOpStamp(userid).subscribe(
+          (data:ResponseData)=>{
               if(data.status==0){
                   this.opStamp=data.data;
               }
-          },
-          error=>{
-
           }
-      )
-
+      );
   }
 
   goData(){

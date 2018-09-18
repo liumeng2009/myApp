@@ -44,21 +44,17 @@ export class EditCorporationPage{
   private groups:Group[]=[];
   private groupId;
   getGroups(){
-    this.publicDataService.getGroups().then(
-      data=>{
-        if(data.status==0){
-          this.groups=[...data.data];
-          console.log(this.groups);
+    this.publicDataService.getGroups().subscribe(
+        (data:ResponseData)=>{
+          const result=this.toolService.apiResult(data);
+          if(result){
+            this.groups=[...data.data];
+          }
+        },
+        error=>{
+          this.toolService.apiException(error);
         }
-        else{
-          this.toolService.toast(data.message);
-        }
-      },
-
-      error=>{
-        this.toolService.toast(error);
-      }
-    )
+    );
   }
   groupOk(e){
     this.getCorporation().then(
@@ -78,42 +74,38 @@ export class EditCorporationPage{
   private corporationId;
   getCorporation(){
     return new Promise((resolve,reject)=>{
-      this.publicDataService.getCoporations(this.groupId).then(
-        data=>{
+      this.publicDataService.getCoporations(this.groupId).subscribe(
+        (data:ResponseData)=>{
           if(data.status==0){
-            resolve(data)
+
           }
           else{
-            reject(data.message)
+              reject(data.message)
           }
         },
         error=>{
           reject(error)
         }
-      )
-    })
+      );
+    });
   }
 
 
 
   save(){
     let operationId=this.navParams.data.operationId;
-    this.detailService.editOperation({operationId:operationId,corporationId:this.corporationId,action:'corporation'}).then(
-      data=>{
-        if(data.status==0){
-          this.toolService.toast(data.message);
-          //发出通知，告诉modal页面，更新operation
-          this.events.publish('operation:updated');
-          this.popoverCtrl.dismiss();
+    this.detailService.editOperation({operationId:operationId,corporationId:this.corporationId,action:'corporation'}).subscribe(
+        data=>{
+          const result=this.toolService.apiResult(data);
+          if(result){
+            this.events.publish('operation:updated');
+            this.popoverCtrl.dismiss();
+          }
+        },
+        error=>{
+          this.toolService.apiException(error);
         }
-        else{
-          this.toolService.toast(data.message);
-        }
-      },
-      error=>{
-        this.toolService.toast(error);
-      }
-    )
+    );
   }
   @ViewChild('selectGroup') selectGroup:Select;
   @ViewChild('selectCorporation') selectCorporation:Select;

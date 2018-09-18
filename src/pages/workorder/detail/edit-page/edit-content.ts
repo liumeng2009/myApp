@@ -55,19 +55,19 @@ export class EditContentPage{
   private types:EquipType[]=[];
   getType(){
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getTypes().then(
-        data=>{
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getTypes().subscribe(
+          (data:ResponseData)=>{
+            if(data.status==0){
+                resolve(data)
+            }
+            else{
+                reject(data.message)
+            }
+          } ,
+          error=>{
+            reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -75,19 +75,19 @@ export class EditContentPage{
   private equipments:Equipment[]=[];
   getEquipment(typecode){
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getEquipment(typecode).then(
-        data=>{
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getEquipment(typecode).subscribe(
+          (data:ResponseData)=>{
+              if(data.status==0){
+                  resolve(data)
+              }
+              else{
+                  reject(data.message)
+              }
+          },
+          error=>{
+              reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          reject(error)
-        }
-      )
+      );
     })
   }
 
@@ -95,41 +95,37 @@ export class EditContentPage{
   private businessContents:any[]=[];
   getBusiness(typecode,equipment){
     return new Promise((resolve, reject)=>{
-      this.publicDataService.getBusinessContents(0,typecode,equipment).then(
-        data=>{
-          if(data.status==0){
-            resolve(data)
+      this.publicDataService.getBusinessContents(0,typecode,equipment).subscribe(
+          (data:ResponseData)=>{
+              if(data.status==0){
+                  resolve(data)
+              }
+              else{
+                  reject(data.message)
+              }
+          },
+          error=>{
+              reject(error)
           }
-          else{
-            reject(data.message)
-          }
-        },
-        error=>{
-          reject(error)
-        }
-      )
+      );
     })
   }
 
   save(){
     let operationId=this.navParams.data.operationId;
     let action=this.navParams.data.action;
-    this.detailService.editOperation({operationId:operationId,business:this.business,action:action}).then(
-      data=>{
-        if(data.status==0){
-          this.toolService.toast(data.message);
-          //发出通知，告诉modal页面，更新operation
-          this.events.publish('operation:updated');
-          this.popoverCtrl.dismiss();
+    this.detailService.editOperation({operationId:operationId,business:this.business,action:action}).subscribe(
+        (data:ResponseData)=>{
+          const result=this.toolService.apiResult(data);
+          if(result){
+            this.events.publish('operation:updated');
+            this.popoverCtrl.dismiss();
+          }
+        },
+        error=>{
+          this.toolService.apiException(error);
         }
-        else{
-          this.toolService.toast(data.message);
-        }
-      },
-      error=>{
-        this.toolService.toast(error);
-      }
-    )
+    );
   }
 
   typeOk(){

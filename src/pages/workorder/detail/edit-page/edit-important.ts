@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {NavParams, Events, PopoverController} from '@ionic/angular'
 import {ToolService} from "../../../../util/tool.service";
 import {DetailService} from "../detail.service";
+import {ResponseData} from "../../../../bean/responseData";
 
 
 @Component({
@@ -29,21 +30,17 @@ export class EditImportantPage{
 
   save(){
     let operationId=this.navParams.data.operationId;
-    this.detailService.editOperation({operationId:operationId,inputValue:this.important,action:'important'}).then(
-      data=>{
-        if(data.status==0){
-          this.toolService.toast(data.message);
-          //发出通知，告诉modal页面，更新operation
-          this.events.publish('operation:updated');
-          this.popoverCtrl.dismiss();
-        }
-        else{
-          this.toolService.toast(data.message);
-        }
+    this.detailService.editOperation({operationId:operationId,inputValue:this.important,action:'important'}).subscribe(
+      (data:ResponseData)=>{
+          const result=this.toolService.apiResult(data);
+          if(result){
+              this.events.publish('operation:updated');
+              this.popoverCtrl.dismiss();
+          }
       },
       error=>{
-        this.toolService.toast(error);
+          this.toolService.apiException(error);
       }
-    )
+    );
   }
 }
