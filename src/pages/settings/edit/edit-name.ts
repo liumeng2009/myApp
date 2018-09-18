@@ -1,36 +1,36 @@
 import {Component} from '@angular/core';
-import {NavParams,Events,PopoverController} from '@ionic/angular'
-import {ToolService} from "../../../util/tool.service";
-import {SettingService} from "../setting.service";
+import {NavParams, Events, PopoverController} from '@ionic/angular'
+import {ToolService} from '../../../util/tool.service';
+import {SettingService} from '../setting.service';
+import {ResponseData} from '../../../bean/responseData';
 
 @Component({
-  templateUrl:'edit-name.html',
-  selector:'edit-setting-name'
+  templateUrl: 'edit-name.html',
+  selector: 'edit-setting-name'
 })
 
 export class EditSettingNamePage{
   constructor(
     private navParams: NavParams,
-    private toolService:ToolService,
-    private events:Events,
-    private popCtrl:PopoverController,
-    private settingService:SettingService
-  ){
-  }
+    private toolService: ToolService,
+    private events: Events,
+    private popCtrl: PopoverController,
+    private settingService: SettingService
+  ) {}
 
   private placeHolder;
-  ionViewWillEnter(){
-    this.phone=this.navParams.data.inputValue;
-    let action=this.navParams.data.action;
-    switch (action){
+  ionViewWillEnter() {
+    this.phone = this.navParams.data.inputValue;
+    const action = this.navParams.data.action;
+    switch (action) {
       case 'phone':
-        this.placeHolder='电话'
+        this.placeHolder = '电话'
         break;
       case 'name':
-        this.placeHolder='登录名'
+        this.placeHolder = '登录名'
         break;
       default:
-        this.placeHolder=''
+        this.placeHolder = ''
         break;
     }
   }
@@ -38,23 +38,19 @@ export class EditSettingNamePage{
 
   private phone;
 
-  save(){
-    let action=this.navParams.data.action;
-    this.settingService.editOperation({inputValue:this.phone,action:action}).then(
-      data=>{
-        if(data.status==0){
-          this.toolService.toast(data.message);
-          //发出通知，告诉modal页面，更新operation
-          this.events.publish('userinfo:updated');
-          this.popCtrl.dismiss();
+  save() {
+    const action = this.navParams.data.action;
+    this.settingService.editOperation({inputValue: this.phone, action: action}).subscribe(
+        (data: ResponseData) => {
+          const result = this.toolService.apiResult(data);
+          if (result) {
+              this.events.publish('userinfo:updated');
+              this.popCtrl.dismiss();
+          }
+        },
+        error => {
+            this.toolService.toast(error);
         }
-        else{
-          this.toolService.toast(data.message);
-        }
-      },
-      error=>{
-        this.toolService.toast(error);
-      }
-    )
+    );
   }
 }

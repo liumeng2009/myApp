@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http,Response,Headers} from '@angular/http';
+import {HttpClient,HttpHeaders} from '@angular/common/http';
 
 
 import {ResponseData} from '../../../bean/responseData';
@@ -9,12 +9,12 @@ import {CookieService} from "angular2-cookie/core";
 
 @Injectable()
 export class SignService {
-  constructor(private http: Http,private cookieService:CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService) {
 
   }
 
-  private saveUrl=new OptConfig().serverPath+'/api/sign/save'
-  private getUrl=new OptConfig().serverPath+'/api/sign/'
+  private saveUrl = new OptConfig().serverPath + '/api/sign/save';
+  private getUrl = new OptConfig().serverPath + '/api/sign/';
 
   saveSign(sign:any): Promise<ResponseData> {
     let token = this.cookieService.get('optAppToken');

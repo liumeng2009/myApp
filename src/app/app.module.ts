@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy,Nav,Toggle } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, Nav, Toggle } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -142,7 +142,13 @@ import {SettingService} from "../pages/settings/setting.service";
       EditSettingAvatarPage,
       EditSettingPasswordPage
   ],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,PipesModule,FormsModule,SignaturePadModule,HttpClientModule],
+  imports: [BrowserModule,
+      IonicModule.forRoot(),
+      AppRoutingModule,
+      PipesModule,
+      FormsModule,
+      SignaturePadModule,
+      HttpClientModule],
   providers: [
     StatusBar,
     SplashScreen,
