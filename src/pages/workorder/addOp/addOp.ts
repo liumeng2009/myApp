@@ -64,7 +64,7 @@ export class AddOpPage{
 
   setBusiness(){
     this.slide.lockSwipeToNext(false);
-    this.slide.slideNext();
+    this.slide.slideNext(500, false);
   }
   setCustom(){
     this.slide.lockSwipeToPrev(false);
@@ -74,7 +74,7 @@ export class AddOpPage{
   private operation:WorkOrder=new WorkOrder(null,null,null,null,false,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null);
   setAction(){
     this.slide.lockSwipeToNext(false);
-    this.slide.slideNext();
+    this.slide.slideNext(500, false);
     //添加工单
     this.operation.order=this.order.id;
     this.operation.incoming_date_timestamp=moment(this.todayString).valueOf();

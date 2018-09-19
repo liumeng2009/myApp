@@ -15,9 +15,19 @@ import {AllBasicPage} from '../pages/chart/all-basic';
 import {AllBasicStampPage} from '../pages/chart/all-basic-stamp';
 import {AllBkPage} from '../pages/chart/all-bk';
 import {AllAddressPage} from '../pages/chart/all-address';
+import {TabsPage} from './tabs/tabs.page';
+import {ListPage} from '../pages/workorder/main/list';
 
 const routes: Routes = [
-  { path: '', loadChildren: './tabs/tabs.module#TabsPageModule' },
+    {
+        path: '',
+        redirectTo: 'tabs/list',
+        pathMatch: 'full'
+    },
+    {component: TabsPage, path: 'tabs', children: [
+            {component: ListPage, path: 'list'},
+            {component: WeChatPage, path: 'wechat'}
+    ]},
   {component: DetailPage, path: 'detail/:id'},
   {component: AboutPage, path: 'about'},
   {component: SettingPage, path: 'setting'},

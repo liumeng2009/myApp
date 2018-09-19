@@ -236,7 +236,7 @@ export class AddPage {
     if(this.create_time_run)
       this.create_time_run.unsubscribe()
     this.slide.lockSwipeToNext(false);
-    this.slide.slideNext();
+    this.slide.slideNext(500, false);
   }
   setCustom(){
     this.slide.lockSwipeToPrev(false);
@@ -258,7 +258,7 @@ export class AddPage {
           if(result){
               this.user={...result.data}
               this.slide.lockSwipeToNext(false);
-              this.slide.slideNext();
+              this.slide.slideNext(500, false);
               //将needs数组转化成新数组，新数组action页面使用
               let incoming_time=new Date(this.todayString)
               console.log(incoming_time);

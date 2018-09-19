@@ -1,9 +1,9 @@
-import {Pipe,PipeTransform} from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
-@Pipe({name:'dateList'})
-export class DatePipe implements PipeTransform{
+@Pipe({name: 'dateList'})
+export class DatePipe implements PipeTransform {
 
-  constructor(){
+  constructor() {
 
   }
 

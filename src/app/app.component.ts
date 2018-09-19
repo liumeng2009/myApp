@@ -84,12 +84,16 @@ export class AppComponent {
 
   private user:User;
   getUserInfo(){
+      console.log('开始验证身份');
       this.authService.getUserInfo().subscribe(
           (data:ResponseData)=>{
               if(data.status==0){
                   this.user={...data.data};
                   this.getUserWorkData(this.user.id);
               }
+          },
+          error=>{
+              console.log(error);
           }
       );
   }

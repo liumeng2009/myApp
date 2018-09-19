@@ -60,6 +60,7 @@ export class ListPage implements OnInit{
   private user:User;
 
   ngOnInit(){
+    alert('list init');
     this.getDateString();
     this.eventListener();
   }
